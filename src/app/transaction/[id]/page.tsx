@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 
 import { useParams } from "next/navigation";
 
-import { createClient }
-from "@supabase/supabase-js";
+import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -16,23 +15,17 @@ export default function TransactionPage() {
 
   const params = useParams();
 
-  const transactionId =
-    Number(params.id);
+  const transactionId = Number(params.id);
 
-  const [transaction, setTransaction] =
-    useState<any>(null);
+  const [transaction, setTransaction] = useState<any>(null);
 
-  const [messages, setMessages] =
-    useState<any[]>([]);
+  const [messages, setMessages] = useState<any[]>([]);
 
-  const [message, setMessage] =
-    useState("");
+  const [message, setMessage] = useState("");
 
-  const [user, setUser] =
-    useState<any>(null);
+  const [user, setUser] = useState<any>(null);
 
-  const [role, setRole] =
-    useState("");
+  const [role, setRole] = useState("");
 
   async function getUser() {
 
@@ -55,54 +48,58 @@ export default function TransactionPage() {
 
     setTransaction(data);
 
-    if (
-      user?.email === data.buyer_email
-    ) {
+    if (user?.email === data.buyer_email) {
       setRole("buyer");
     }
 
-    if (
-      user?.email === data.seller_email
-    ) {
+    if (user?.email === data.seller_email) {
       setRole("seller");
     }
   }
 
   async function loadMessages() {
 
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("messages")
       .select("*")
-      .eq(
-        "transaction_id",
-        transactionId
-      )
+      .eq("transaction_id", transactionId)
       .order("id", {
         ascending: true,
       });
+
+    if (error) {
+      console.log(error);
+      return;
+    }
 
     setMessages(data || []);
   }
 
   async function sendMessage() {
 
-    if (!message) return;
+    if (!message.trim()) return;
 
-    await supabase
+    const { error } = await supabase
       .from("messages")
       .insert([
         {
-          transaction_id:
-            transactionId,
+          transaction_id: transactionId,
 
-          sender_email:
-            user?.email,
+          sender: user?.email,
 
-          message,
+          message: message,
         },
       ]);
 
+    if (error) {
+      console.log(error);
+      alert(error.message);
+      return;
+    }
+
     setMessage("");
+
+    loadMessages();
   }
 
   async function buyerPaid() {
@@ -169,9 +166,7 @@ export default function TransactionPage() {
 
     const channel = supabase
 
-      .channel(
-        `messages-${transactionId}`
-      )
+      .channel(`messages-${transactionId}`)
 
       .on(
         "postgres_changes",
@@ -193,9 +188,7 @@ export default function TransactionPage() {
 
     return () => {
 
-      supabase.removeChannel(
-        channel
-      );
+      supabase.removeChannel(channel);
 
     };
 
@@ -229,21 +222,15 @@ export default function TransactionPage() {
           <div className="space-y-2 text-slate-300">
 
             <p>
-              Amount:
-              {" "}
-              ${transaction.amount}
+              Amount: ${transaction.amount}
             </p>
 
             <p>
-              Status:
-              {" "}
-              {transaction.status}
+              Status: {transaction.status}
             </p>
 
             <p>
-              Escrow Code:
-              {" "}
-              {transaction.transaction_code}
+              Escrow Code: {transaction.transaction_code}
             </p>
 
             <p>
@@ -279,8 +266,7 @@ export default function TransactionPage() {
             {messages.map((msg) => {
 
               const mine =
-                msg.sender_email ===
-                user?.email;
+                msg.sender === user?.email;
 
               return (
 
@@ -309,7 +295,7 @@ export default function TransactionPage() {
 
                     <p className="text-sm text-white/70 mb-2">
 
-                      {msg.sender_email ===
+                      {msg.sender ===
                         transaction.buyer_email
                           ? "Buyer"
                           : "Seller"}
@@ -373,8 +359,7 @@ export default function TransactionPage() {
         <div className="flex flex-wrap gap-4">
 
           {role === "buyer" &&
-            transaction.status ===
-              "pending" && (
+            transaction.status === "pending" && (
 
             <button
               onClick={buyerPaid}
@@ -393,8 +378,7 @@ export default function TransactionPage() {
           )}
 
           {role === "seller" &&
-            transaction.status ===
-              "paid" && (
+            transaction.status === "paid" && (
 
             <button
               onClick={sellerReleased}
@@ -413,8 +397,7 @@ export default function TransactionPage() {
           )}
 
           {role === "buyer" &&
-            transaction.status ===
-              "released" && (
+            transaction.status === "released" && (
 
             <>
 
