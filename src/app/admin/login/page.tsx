@@ -26,36 +26,54 @@ export default function AdminLoginPage() {
 
   async function loginAdmin() {
 
-    setLoading(true);
+    try {
 
-    const { data, error } =
-      await supabase
-        .from("admins")
-        .select("*")
-        .eq("email", email)
-        .eq("password", password)
-        .single();
+      setLoading(true);
 
-    if (error || !data) {
+      const { data, error } =
+        await supabase
+          .from("admins")
+          .select("*")
+          .eq(
+            "email",
+            email.trim()
+          )
+          .single();
 
-      alert("Invalid admin credentials");
+      if (error || !data) {
 
-      setLoading(false);
+        alert("Admin not found");
 
-      return;
+        setLoading(false);
+
+        return;
+      }
+
+      if (
+        data.password !==
+        password.trim()
+      ) {
+
+        alert("Wrong password");
+
+        setLoading(false);
+
+        return;
+      }
+
+      document.cookie =
+        "admin_logged_in=true; path=/;";
+
+      router.push(
+        "/admin/dashboard"
+      );
+
+    } catch (err) {
+
+      console.log(err);
+
+      alert("Login failed");
     }
-
-    localStorage.setItem(
-      "admin_logged_in",
-      "true"
-    );
-
-    localStorage.setItem(
-      "admin_email",
-      email
-    );
-
-    router.push("/admin/dashboard");
   }
 
   return (
@@ -91,7 +109,7 @@ export default function AdminLoginPage() {
           </h1>
 
           <p className="text-slate-400">
-            3rdParty Escrow Administration
+            3rdParty Escrow Security Center
           </p>
 
         </div>
@@ -106,7 +124,9 @@ export default function AdminLoginPage() {
             value={email}
 
             onChange={(e) =>
-              setEmail(e.target.value)
+              setEmail(
+                e.target.value
+              )
             }
 
             className="
@@ -129,7 +149,9 @@ export default function AdminLoginPage() {
             value={password}
 
             onChange={(e) =>
-              setPassword(e.target.value)
+              setPassword(
+                e.target.value
+              )
             }
 
             className="
