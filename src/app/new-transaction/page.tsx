@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { useRouter } from "next/navigation";
 
@@ -15,10 +15,7 @@ export default function NewTransactionPage() {
 
   const router = useRouter();
 
-  const [user, setUser] =
-    useState<any>(null);
-
-  const [title, setTitle] =
+  const [transactionName, setTransactionName] =
     useState("");
 
   const [amount, setAmount] =
@@ -30,252 +27,267 @@ export default function NewTransactionPage() {
   const [loading, setLoading] =
     useState(false);
 
-  useEffect(() => {
+  async function createTransaction() {
 
-    async function getUser() {
+    setLoading(true);
 
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      setUser(user);
-    }
-
-    getUser();
-
-  }, []);
-
-  async function createTransaction(
-    e: React.FormEvent<HTMLFormElement>
-  ) {
-
-    e.preventDefault();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
 
-      alert("Please login first");
+      alert("Please login");
+
+      setLoading(false);
 
       return;
     }
 
-    setLoading(true);
+    const transactionCode =
+      Math.floor(
+        100000 + Math.random() * 900000
+      ).toString();
 
-    try {
+    const { data, error } =
+      await supabase
 
-      const transactionCode =
-        "ESCROW-" +
-        Math.floor(
-          100000 +
-            Math.random() * 900000
-        );
-
-      const { error } = await supabase
         .from("transactions")
+
         .insert([
           {
-            transaction_name: title,
-            amount: Number(amount),
-            seller_email: sellerEmail,
-            buyer_email: user.email,
+            transaction_name:
+              transactionName,
+
+            amount,
+
+            buyer_email:
+              user.email,
+
+            seller_email:
+              sellerEmail,
+
             transaction_code:
               transactionCode,
+
             status: "pending",
           },
-        ]);
+        ])
 
-      if (error) {
+        .select()
 
-        console.log(error);
+        .single();
 
-        alert("Database save failed");
+    if (error) {
 
-        setLoading(false);
-
-        return;
-      }
-
-      // SEND EMAIL
-      await fetch("/api/send-email", {
-        method: "POST",
-
-        headers: {
-          "Content-Type":
-            "application/json",
-        },
-
-        body: JSON.stringify({
-          sellerEmail,
-          transactionName: title,
-          amount,
-          transactionCode,
-        }),
-      });
-
-      alert(
-        "Transaction created successfully"
-      );
-
-      router.push("/transaction-chat");
-
-    } catch (error) {
-
-      console.log(error);
-
-      alert("Something went wrong");
-
-    } finally {
+      alert(error.message);
 
       setLoading(false);
+
+      return;
     }
+
+    /* INVITE LINK */
+    const inviteLink =
+      "http://localhost:3000/register?invited=true";
+
+    /* EMAIL */
+    await fetch("/api/send-email", {
+
+      method: "POST",
+
+      headers: {
+        "Content-Type":
+          "application/json",
+      },
+
+      body: JSON.stringify({
+
+        to: sellerEmail,
+
+        subject:
+          "Escrow Transaction Invitation",
+
+        html: `
+          <div style="font-family:sans-serif;padding:20px">
+
+            <h1>
+              You have been invited
+              to an escrow transaction
+            </h1>
+
+            <p>
+              Transaction:
+              ${transactionName}
+            </p>
+
+            <p>
+              Amount:
+              $${amount}
+            </p>
+
+            <p>
+              Create your account
+              below to continue:
+            </p>
+
+            <a
+              href="${inviteLink}"
+              style="
+                display:inline-block;
+                margin-top:20px;
+                background:#2563eb;
+                color:white;
+                padding:14px 24px;
+                border-radius:12px;
+                text-decoration:none;
+                font-weight:bold;
+              "
+            >
+              Create Account
+            </a>
+
+          </div>
+        `,
+      }),
+    });
+
+    router.push("/dashboard");
   }
 
   return (
 
-    <main className="min-h-screen bg-slate-950 text-white p-8">
+    <main
+      className="
+        min-h-screen
+        bg-slate-950
+        text-white
+        flex
+        items-center
+        justify-center
+        p-6
+      "
+    >
 
-      <div className="max-w-3xl mx-auto">
+      <div
+        className="
+          w-full
+          max-w-2xl
+          bg-slate-900
+          border
+          border-white/10
+          rounded-3xl
+          p-10
+        "
+      >
 
-        <div
+        <h1
           className="
-            bg-slate-900
-            border
-            border-white/10
-            rounded-3xl
-            p-10
+            text-5xl
+            font-black
+            mb-10
           "
         >
+          Create Transaction
+        </h1>
 
-          <h1 className="text-5xl font-black mb-4">
-            Create Escrow Transaction
-          </h1>
+        <div className="space-y-6">
 
-          <p className="text-slate-400 mb-10">
-            Protected buyer and seller
-            escrow workflow.
-          </p>
+          <input
+            type="text"
 
-          <form
-            onSubmit={createTransaction}
-            className="space-y-6"
+            placeholder="Transaction name"
+
+            value={transactionName}
+
+            onChange={(e) =>
+              setTransactionName(
+                e.target.value
+              )
+            }
+
+            className="
+              w-full
+              bg-slate-800
+              border
+              border-white/10
+              rounded-2xl
+              px-5
+              py-4
+            "
+          />
+
+          <input
+            type="number"
+
+            placeholder="Amount"
+
+            value={amount}
+
+            onChange={(e) =>
+              setAmount(
+                e.target.value
+              )
+            }
+
+            className="
+              w-full
+              bg-slate-800
+              border
+              border-white/10
+              rounded-2xl
+              px-5
+              py-4
+            "
+          />
+
+          <input
+            type="email"
+
+            placeholder="Seller email"
+
+            value={sellerEmail}
+
+            onChange={(e) =>
+              setSellerEmail(
+                e.target.value
+              )
+            }
+
+            className="
+              w-full
+              bg-slate-800
+              border
+              border-white/10
+              rounded-2xl
+              px-5
+              py-4
+            "
+          />
+
+          <button
+            onClick={
+              createTransaction
+            }
+
+            disabled={loading}
+
+            className="
+              w-full
+              bg-blue-600
+              hover:bg-blue-700
+              rounded-2xl
+              py-4
+              font-bold
+              text-lg
+            "
           >
 
-            {/* ITEM */}
-            <div>
+            {loading
+              ? "Creating..."
+              : "Create Transaction"}
 
-              <label className="block mb-3 font-bold">
-
-                Item / Service Name
-
-              </label>
-
-              <input
-                type="text"
-                required
-                value={title}
-                onChange={(e) =>
-                  setTitle(e.target.value)
-                }
-                placeholder="MacBook Pro M3"
-                className="
-                  w-full
-                  bg-slate-950
-                  border
-                  border-white/10
-                  rounded-2xl
-                  px-5
-                  py-4
-                  text-white
-                "
-              />
-
-            </div>
-
-            {/* AMOUNT */}
-            <div>
-
-              <label className="block mb-3 font-bold">
-
-                Transaction Amount
-
-              </label>
-
-              <input
-                type="number"
-                required
-                value={amount}
-                onChange={(e) =>
-                  setAmount(e.target.value)
-                }
-                placeholder="500"
-                className="
-                  w-full
-                  bg-slate-950
-                  border
-                  border-white/10
-                  rounded-2xl
-                  px-5
-                  py-4
-                  text-white
-                "
-              />
-
-            </div>
-
-            {/* SELLER EMAIL */}
-            <div>
-
-              <label className="block mb-3 font-bold">
-
-                Seller Email
-
-              </label>
-
-              <input
-                type="email"
-                required
-                value={sellerEmail}
-                onChange={(e) =>
-                  setSellerEmail(
-                    e.target.value
-                  )
-                }
-                placeholder="seller@email.com"
-                className="
-                  w-full
-                  bg-slate-950
-                  border
-                  border-white/10
-                  rounded-2xl
-                  px-5
-                  py-4
-                  text-white
-                "
-              />
-
-            </div>
-
-            {/* BUTTON */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="
-                w-full
-                bg-blue-600
-                hover:bg-blue-700
-                py-5
-                rounded-2xl
-                font-bold
-                text-lg
-              "
-            >
-
-              {loading
-                ? "Creating Transaction..."
-                : "Create Escrow"}
-
-            </button>
-
-          </form>
+          </button>
 
         </div>
 
