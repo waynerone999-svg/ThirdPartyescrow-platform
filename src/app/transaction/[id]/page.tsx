@@ -332,6 +332,16 @@ export default function TransactionPage() {
             </p>
 
             <p>
+              Payment Method:
+              {" "}
+
+              <span className="font-bold text-green-400">
+                {transaction.payment_method}
+              </span>
+
+            </p>
+
+            <p>
               Escrow Code:
               {" "}
               {transaction.transaction_code}
@@ -622,6 +632,7 @@ export default function TransactionPage() {
               </button>
 
             </>
+
           )}
 
         </div>
