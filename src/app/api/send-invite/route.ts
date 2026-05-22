@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     await resend.emails.send({
 
       from:
-        "Escrow Platform <onboarding@resend.dev>",
+        "onboarding@resend.dev",
 
       to: email,
 
@@ -31,7 +31,10 @@ export async function POST(req: Request) {
 
       html: `
 
-        <div style="font-family: Arial; padding: 30px;">
+        <div style="
+          font-family: Arial;
+          padding: 30px;
+        ">
 
           <h1>
             Escrow Invitation
