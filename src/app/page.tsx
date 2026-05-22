@@ -6,7 +6,7 @@ export default function HomePage() {
 
   return (
 
-    <main className="min-h-screen bg-black text-white overflow-hidden">
+    <main className="min-h-screen bg-slate-950 text-white overflow-hidden">
 
       {/* HERO */}
       <section
@@ -15,8 +15,8 @@ export default function HomePage() {
           min-h-screen
           flex
           items-center
-          overflow-hidden
           px-6
+          overflow-hidden
         "
       >
 
@@ -26,16 +26,17 @@ export default function HomePage() {
             absolute
             inset-0
             bg-gradient-to-br
-            from-black
-            via-slate-950
+            from-slate-950
+            via-black
             to-blue-950
           "
         />
 
+        {/* GLOW */}
         <div
           className="
             absolute
-            top-[-150px]
+            top-[-200px]
             right-[-100px]
             w-[500px]
             h-[500px]
@@ -65,19 +66,19 @@ export default function HomePage() {
               className="
                 inline-flex
                 items-center
-                gap-3
-                bg-green-500/10
+                gap-2
+                bg-blue-600/20
                 border
-                border-green-500/30
-                px-6
-                py-3
+                border-blue-500/30
+                px-5
+                py-2
                 rounded-full
-                text-green-400
-                font-black
+                text-blue-400
+                font-bold
                 mb-8
               "
             >
-              SECURE GLOBAL ESCROW PLATFORM
+              TRUSTED GLOBAL ESCROW PLATFORM
             </div>
 
             <h1
@@ -89,13 +90,13 @@ export default function HomePage() {
                 mb-8
               "
             >
-              Buy & Sell
+              Secure
               <br />
 
-              Safely
+              High-Value
               <br />
 
-              Worldwide
+              Transactions
             </h1>
 
             <p
@@ -107,10 +108,10 @@ export default function HomePage() {
                 max-w-2xl
               "
             >
-              Secure transactions for FIFA World Cup tickets,
-              concert tickets, electronics, vehicles, freelance
-              services, digital assets and international business deals.
-              Escrow protects both buyer and seller from fraud.
+              Safely buy and sell FIFA tickets, concert tickets,
+              electronics, vehicles, freelance services,
+              digital assets and international deals using
+              secure escrow protection.
             </p>
 
             <div className="flex flex-wrap gap-5">
@@ -156,12 +157,12 @@ export default function HomePage() {
 
           </div>
 
-          {/* RIGHT */}
+          {/* RIGHT SIDE */}
           <div className="relative">
 
             <div
               className="
-                bg-white/5
+                bg-slate-900/80
                 border
                 border-white/10
                 backdrop-blur-xl
@@ -172,7 +173,7 @@ export default function HomePage() {
 
               <img
                 src="https://images.unsplash.com/photo-1517466787929-bc90951d0974?q=80&w=1400&auto=format&fit=crop"
-                alt="Escrow Platform"
+                alt="Escrow"
                 className="
                   rounded-3xl
                   h-[320px]
@@ -182,140 +183,85 @@ export default function HomePage() {
                 "
               />
 
-              <div className="grid grid-cols-2 gap-5">
+              <div className="space-y-5">
 
                 <div
                   className="
-                    bg-black/30
+                    bg-slate-800
                     rounded-3xl
                     p-6
                   "
                 >
 
-                  <p className="text-slate-400 mb-2">
-                    Protected Transactions
-                  </p>
+                  <div className="flex justify-between mb-3">
 
-                  <h2 className="text-4xl font-black text-blue-400">
-                    24/7
+                    <span className="text-slate-400">
+                      Transaction Status
+                    </span>
+
+                    <span className="text-green-400 font-bold">
+                      SECURED
+                    </span>
+
+                  </div>
+
+                  <h2 className="text-3xl font-black mb-3">
+                    Escrow Protection Active
                   </h2>
+
+                  <p className="text-slate-400">
+                    Funds remain protected until delivery confirmation.
+                  </p>
 
                 </div>
 
-                <div
-                  className="
-                    bg-black/30
-                    rounded-3xl
-                    p-6
-                  "
-                >
+                <div className="grid grid-cols-2 gap-5">
 
-                  <p className="text-slate-400 mb-2">
-                    Fraud Prevention
-                  </p>
+                  <div
+                    className="
+                      bg-blue-600/20
+                      border
+                      border-blue-500/20
+                      rounded-3xl
+                      p-6
+                    "
+                  >
 
-                  <h2 className="text-4xl font-black text-green-400">
-                    ACTIVE
-                  </h2>
+                    <h3 className="text-4xl font-black mb-2">
+                      24/7
+                    </h3>
 
-                </div>
+                    <p className="text-slate-300">
+                      Monitoring
+                    </p>
 
-                <div
-                  className="
-                    bg-black/30
-                    rounded-3xl
-                    p-6
-                  "
-                >
+                  </div>
 
-                  <p className="text-slate-400 mb-2">
-                    Instant Escrow
-                  </p>
+                  <div
+                    className="
+                      bg-green-600/20
+                      border
+                      border-green-500/20
+                      rounded-3xl
+                      p-6
+                    "
+                  >
 
-                  <h2 className="text-4xl font-black text-yellow-400">
-                    LIVE
-                  </h2>
+                    <h3 className="text-4xl font-black mb-2">
+                      Instant
+                    </h3>
 
-                </div>
+                    <p className="text-slate-300">
+                      Verification
+                    </p>
 
-                <div
-                  className="
-                    bg-black/30
-                    rounded-3xl
-                    p-6
-                  "
-                >
-
-                  <p className="text-slate-400 mb-2">
-                    Global Payments
-                  </p>
-
-                  <h2 className="text-4xl font-black text-purple-400">
-                    FAST
-                  </h2>
+                  </div>
 
                 </div>
 
               </div>
 
             </div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-      {/* USE CASES */}
-      <section className="px-6 py-28 bg-slate-950">
-
-        <div className="max-w-7xl mx-auto">
-
-          <div className="text-center mb-20">
-
-            <h2 className="text-6xl font-black mb-6">
-              Popular Escrow Transactions
-            </h2>
-
-            <p className="text-slate-400 text-xl">
-              Secure high-value online deals
-            </p>
-
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-
-            {[
-              "FIFA World Cup Tickets",
-              "Concert & Event Tickets",
-              "Cars & Vehicles",
-              "Electronics & Phones",
-              "Freelance Services",
-              "Digital Assets & Domains",
-            ].map((item) => (
-
-              <div
-                key={item}
-                className="
-                  bg-black/40
-                  border
-                  border-white/10
-                  rounded-3xl
-                  p-8
-                "
-              >
-
-                <h3 className="text-3xl font-black mb-4">
-                  {item}
-                </h3>
-
-                <p className="text-slate-400 leading-relaxed">
-                  Secure escrow protection for both buyers and sellers.
-                </p>
-
-              </div>
-
-            ))}
 
           </div>
 
@@ -335,7 +281,7 @@ export default function HomePage() {
             </h2>
 
             <p className="text-slate-400 text-xl">
-              Safe and transparent transaction flow
+              Fast, secure and transparent transactions
             </p>
 
           </div>
@@ -346,22 +292,22 @@ export default function HomePage() {
               {
                 step: "1",
                 title: "Create Deal",
-                desc: "Buyer opens escrow transaction and invites seller.",
+                desc: "Buyer creates transaction and invites seller.",
               },
               {
                 step: "2",
                 title: "Buyer Pays",
-                desc: "Funds are secured under escrow protection.",
+                desc: "Funds become secured by escrow protection.",
               },
               {
                 step: "3",
                 title: "Seller Delivers",
-                desc: "Seller safely sends goods/services/assets.",
+                desc: "Seller safely delivers product or service.",
               },
               {
                 step: "4",
                 title: "Buyer Confirms",
-                desc: "Buyer confirms successful delivery.",
+                desc: "Transaction completes after confirmation.",
               },
             ].map((item) => (
 
@@ -380,8 +326,8 @@ export default function HomePage() {
                   className="
                     w-16
                     h-16
-                    rounded-2xl
                     bg-blue-600
+                    rounded-2xl
                     flex
                     items-center
                     justify-center
@@ -423,7 +369,7 @@ export default function HomePage() {
             </h2>
 
             <p className="text-slate-400 text-xl">
-              International and local transfer support
+              Fast local and international transfers
             </p>
 
           </div>
