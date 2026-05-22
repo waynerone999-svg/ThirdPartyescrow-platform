@@ -6,72 +6,112 @@ export default function HomePage() {
 
   return (
 
-    <main className="min-h-screen bg-slate-950 text-white overflow-hidden">
+    <main className="min-h-screen bg-black text-white overflow-hidden">
 
       {/* HERO */}
       <section
         className="
           relative
+          min-h-screen
+          flex
+          items-center
           px-6
-          py-28
-          border-b
-          border-white/10
+          overflow-hidden
         "
       >
 
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-20 items-center">
+        {/* BACKGROUND */}
+        <div
+          className="
+            absolute
+            inset-0
+            bg-gradient-to-br
+            from-black
+            via-slate-950
+            to-blue-950
+          "
+        />
 
+        {/* GLOW */}
+        <div
+          className="
+            absolute
+            top-[-200px]
+            right-[-100px]
+            w-[500px]
+            h-[500px]
+            bg-blue-600/20
+            rounded-full
+            blur-3xl
+          "
+        />
+
+        <div
+          className="
+            max-w-7xl
+            mx-auto
+            grid
+            lg:grid-cols-2
+            gap-20
+            items-center
+            relative
+            z-10
+          "
+        >
+
+          {/* LEFT */}
           <div>
 
             <div
               className="
                 inline-flex
                 items-center
-                gap-2
-                bg-blue-600/20
+                gap-3
+                bg-yellow-500/10
                 border
-                border-blue-500/30
-                px-5
-                py-2
+                border-yellow-500/30
+                px-6
+                py-3
                 rounded-full
-                text-blue-400
-                font-bold
+                text-yellow-400
+                font-black
                 mb-8
               "
             >
-              TRUSTED DIGITAL ESCROW PLATFORM
+              FIFA WORLD CUP TICKETS ESCROW
             </div>
 
             <h1
               className="
                 text-6xl
-                lg:text-7xl
+                lg:text-8xl
                 font-black
                 leading-tight
                 mb-8
               "
             >
-              Secure Payments
+              Buy &
               <br />
 
-              Fast Transactions
+              Sell FIFA
               <br />
 
-              Zero Trust Issues
+              Tickets Safely
             </h1>
 
             <p
               className="
-                text-slate-400
+                text-slate-300
                 text-xl
                 leading-relaxed
                 mb-10
                 max-w-2xl
               "
             >
-              Our escrow platform protects both buyers and sellers
-              during online transactions. Funds remain secured until
-              assets or services are successfully delivered and confirmed.
+              Secure high-value football ticket transactions
+              with instant escrow protection. Buyers stay protected,
+              sellers avoid fraud, and both parties transact safely
+              worldwide.
             </p>
 
             <div className="flex flex-wrap gap-5">
@@ -80,8 +120,9 @@ export default function HomePage() {
 
                 <button
                   className="
-                    bg-blue-600
-                    hover:bg-blue-700
+                    bg-yellow-500
+                    hover:bg-yellow-600
+                    text-black
                     px-10
                     py-5
                     rounded-2xl
@@ -89,7 +130,7 @@ export default function HomePage() {
                     text-lg
                   "
                 >
-                  Get Started
+                  Start Secure Transaction
                 </button>
 
               </Link>
@@ -117,92 +158,112 @@ export default function HomePage() {
 
           </div>
 
-          {/* RIGHT SIDE */}
+          {/* RIGHT */}
           <div className="relative">
 
             <div
               className="
-                bg-slate-900
+                bg-white/5
                 border
                 border-white/10
+                backdrop-blur-xl
                 rounded-[40px]
-                p-10
-                shadow-2xl
+                p-8
               "
             >
 
-              <div className="space-y-6">
+              <img
+                src="https://images.unsplash.com/photo-1547347298-4074fc3086f0?q=80&w=1200&auto=format&fit=crop"
+                alt="Football Stadium"
+                className="
+                  rounded-3xl
+                  mb-6
+                  h-[320px]
+                  w-full
+                  object-cover
+                "
+              />
+
+              <div className="space-y-5">
 
                 <div
                   className="
-                    bg-slate-800
-                    rounded-3xl
-                    p-6
+                    flex
+                    justify-between
+                    items-center
                   "
                 >
 
-                  <div className="flex justify-between mb-3">
+                  <div>
 
-                    <span className="text-slate-400">
-                      Transaction
-                    </span>
+                    <p className="text-slate-400 mb-1">
+                      Match
+                    </p>
 
-                    <span className="text-green-400 font-bold">
-                      SECURED
-                    </span>
+                    <h2 className="text-3xl font-black">
+                      FIFA Final 2026
+                    </h2>
 
                   </div>
 
-                  <h2 className="text-3xl font-black mb-3">
-                    MacBook Pro Sale
-                  </h2>
-
-                  <p className="text-slate-400">
-                    Buyer payment protected by escrow until
-                    delivery confirmation.
-                  </p>
+                  <div
+                    className="
+                      bg-green-500/20
+                      border
+                      border-green-500/30
+                      px-5
+                      py-2
+                      rounded-2xl
+                      text-green-400
+                      font-black
+                    "
+                  >
+                    VERIFIED
+                  </div>
 
                 </div>
 
-                <div className="grid grid-cols-2 gap-5">
+                <div
+                  className="
+                    grid
+                    grid-cols-2
+                    gap-4
+                  "
+                >
 
                   <div
                     className="
-                      bg-blue-600/20
-                      border
-                      border-blue-500/20
-                      rounded-3xl
-                      p-6
+                      bg-black/30
+                      rounded-2xl
+                      p-5
                     "
                   >
 
-                    <h3 className="text-4xl font-black mb-2">
-                      24/7
-                    </h3>
-
-                    <p className="text-slate-300">
-                      Transaction Monitoring
+                    <p className="text-slate-400 mb-2">
+                      Escrow Protection
                     </p>
+
+                    <h3 className="text-2xl font-black text-blue-400">
+                      ACTIVE
+                    </h3>
 
                   </div>
 
                   <div
                     className="
-                      bg-green-600/20
-                      border
-                      border-green-500/20
-                      rounded-3xl
-                      p-6
+                      bg-black/30
+                      rounded-2xl
+                      p-5
                     "
                   >
 
-                    <h3 className="text-4xl font-black mb-2">
-                      Instant
-                    </h3>
-
-                    <p className="text-slate-300">
-                      Escrow Verification
+                    <p className="text-slate-400 mb-2">
+                      Fraud Prevention
                     </p>
+
+                    <h3 className="text-2xl font-black text-yellow-400">
+                      SECURED
+                    </h3>
 
                   </div>
 
@@ -219,175 +280,87 @@ export default function HomePage() {
       </section>
 
       {/* HOW IT WORKS */}
-      <section className="px-6 py-24">
+      <section className="px-6 py-28 bg-slate-950">
 
         <div className="max-w-7xl mx-auto">
 
           <div className="text-center mb-20">
 
-            <h2 className="text-5xl font-black mb-6">
-              How Escrow Works
+            <h2 className="text-6xl font-black mb-6">
+              How Ticket Escrow Works
             </h2>
 
             <p className="text-slate-400 text-xl">
-              Simple, secure and fast transaction protection
+              Safe transactions for premium football tickets
             </p>
 
           </div>
 
           <div className="grid lg:grid-cols-4 gap-8">
 
-            {/* STEP */}
-            <div
-              className="
-                bg-slate-900
-                border
-                border-white/10
-                rounded-3xl
-                p-8
-              "
-            >
+            {[
+              {
+                step: "1",
+                title: "Create Transaction",
+                desc: "Buyer opens a secure escrow transaction and invites seller.",
+              },
+              {
+                step: "2",
+                title: "Buyer Pays",
+                desc: "Payment is secured by escrow before ticket delivery.",
+              },
+              {
+                step: "3",
+                title: "Seller Transfers",
+                desc: "Seller safely transfers FIFA tickets after escrow security.",
+              },
+              {
+                step: "4",
+                title: "Buyer Confirms",
+                desc: "Buyer confirms successful ticket delivery.",
+              },
+            ].map((item) => (
 
               <div
+                key={item.step}
                 className="
-                  w-16
-                  h-16
-                  bg-blue-600
-                  rounded-2xl
-                  flex
-                  items-center
-                  justify-center
-                  text-3xl
-                  font-black
-                  mb-6
+                  bg-black/40
+                  border
+                  border-white/10
+                  rounded-3xl
+                  p-8
                 "
               >
-                1
+
+                <div
+                  className="
+                    w-16
+                    h-16
+                    rounded-2xl
+                    bg-yellow-500
+                    text-black
+                    flex
+                    items-center
+                    justify-center
+                    text-3xl
+                    font-black
+                    mb-6
+                  "
+                >
+                  {item.step}
+                </div>
+
+                <h3 className="text-3xl font-black mb-4">
+                  {item.title}
+                </h3>
+
+                <p className="text-slate-400 leading-relaxed">
+                  {item.desc}
+                </p>
+
               </div>
 
-              <h3 className="text-2xl font-black mb-4">
-                Create Transaction
-              </h3>
-
-              <p className="text-slate-400 leading-relaxed">
-                Buyer creates a secure escrow transaction and invites seller.
-              </p>
-
-            </div>
-
-            {/* STEP */}
-            <div
-              className="
-                bg-slate-900
-                border
-                border-white/10
-                rounded-3xl
-                p-8
-              "
-            >
-
-              <div
-                className="
-                  w-16
-                  h-16
-                  bg-green-600
-                  rounded-2xl
-                  flex
-                  items-center
-                  justify-center
-                  text-3xl
-                  font-black
-                  mb-6
-                "
-              >
-                2
-              </div>
-
-              <h3 className="text-2xl font-black mb-4">
-                Buyer Pays
-              </h3>
-
-              <p className="text-slate-400 leading-relaxed">
-                Funds are marked secured by escrow while awaiting delivery.
-              </p>
-
-            </div>
-
-            {/* STEP */}
-            <div
-              className="
-                bg-slate-900
-                border
-                border-white/10
-                rounded-3xl
-                p-8
-              "
-            >
-
-              <div
-                className="
-                  w-16
-                  h-16
-                  bg-yellow-500
-                  rounded-2xl
-                  flex
-                  items-center
-                  justify-center
-                  text-3xl
-                  font-black
-                  mb-6
-                "
-              >
-                3
-              </div>
-
-              <h3 className="text-2xl font-black mb-4">
-                Seller Delivers
-              </h3>
-
-              <p className="text-slate-400 leading-relaxed">
-                Seller safely delivers goods/services after payment security.
-              </p>
-
-            </div>
-
-            {/* STEP */}
-            <div
-              className="
-                bg-slate-900
-                border
-                border-white/10
-                rounded-3xl
-                p-8
-              "
-            >
-
-              <div
-                className="
-                  w-16
-                  h-16
-                  bg-purple-600
-                  rounded-2xl
-                  flex
-                  items-center
-                  justify-center
-                  text-3xl
-                  font-black
-                  mb-6
-                "
-              >
-                4
-              </div>
-
-              <h3 className="text-2xl font-black mb-4">
-                Buyer Confirms
-              </h3>
-
-              <p className="text-slate-400 leading-relaxed">
-                Buyer confirms successful delivery and transaction completes.
-              </p>
-
-            </div>
+            ))}
 
           </div>
 
@@ -396,14 +369,7 @@ export default function HomePage() {
       </section>
 
       {/* PAYMENT METHODS */}
-      <section
-        className="
-          px-6
-          py-24
-          border-t
-          border-white/10
-        "
-      >
+      <section className="px-6 py-24 bg-black">
 
         <div className="max-w-7xl mx-auto">
 
@@ -414,7 +380,7 @@ export default function HomePage() {
             </h2>
 
             <p className="text-slate-400 text-xl">
-              Fast local and international transaction options
+              Fast international and local transfers
             </p>
 
           </div>
@@ -427,8 +393,8 @@ export default function HomePage() {
               "Cash App",
               "Apple Pay",
               "M-PESA",
-              "Bank Transfer",
               "PayPal",
+              "Bank Transfer",
               "Airtel Money",
             ].map((method) => (
 
