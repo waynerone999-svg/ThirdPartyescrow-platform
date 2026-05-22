@@ -15,8 +15,8 @@ export default function HomePage() {
           min-h-screen
           flex
           items-center
-          px-6
           overflow-hidden
+          px-6
         "
       >
 
@@ -32,11 +32,10 @@ export default function HomePage() {
           "
         />
 
-        {/* GLOW */}
         <div
           className="
             absolute
-            top-[-200px]
+            top-[-150px]
             right-[-100px]
             w-[500px]
             h-[500px]
@@ -67,18 +66,18 @@ export default function HomePage() {
                 inline-flex
                 items-center
                 gap-3
-                bg-yellow-500/10
+                bg-green-500/10
                 border
-                border-yellow-500/30
+                border-green-500/30
                 px-6
                 py-3
                 rounded-full
-                text-yellow-400
+                text-green-400
                 font-black
                 mb-8
               "
             >
-              FIFA WORLD CUP TICKETS ESCROW
+              SECURE GLOBAL ESCROW PLATFORM
             </div>
 
             <h1
@@ -90,13 +89,13 @@ export default function HomePage() {
                 mb-8
               "
             >
-              Buy &
+              Buy & Sell
               <br />
 
-              Sell FIFA
+              Safely
               <br />
 
-              Tickets Safely
+              Worldwide
             </h1>
 
             <p
@@ -108,10 +107,10 @@ export default function HomePage() {
                 max-w-2xl
               "
             >
-              Secure high-value football ticket transactions
-              with instant escrow protection. Buyers stay protected,
-              sellers avoid fraud, and both parties transact safely
-              worldwide.
+              Secure transactions for FIFA World Cup tickets,
+              concert tickets, electronics, vehicles, freelance
+              services, digital assets and international business deals.
+              Escrow protects both buyer and seller from fraud.
             </p>
 
             <div className="flex flex-wrap gap-5">
@@ -120,9 +119,8 @@ export default function HomePage() {
 
                 <button
                   className="
-                    bg-yellow-500
-                    hover:bg-yellow-600
-                    text-black
+                    bg-blue-600
+                    hover:bg-blue-700
                     px-10
                     py-5
                     rounded-2xl
@@ -130,7 +128,7 @@ export default function HomePage() {
                     text-lg
                   "
                 >
-                  Start Secure Transaction
+                  Start Transaction
                 </button>
 
               </Link>
@@ -173,99 +171,88 @@ export default function HomePage() {
             >
 
               <img
-                src="https://images.unsplash.com/photo-1547347298-4074fc3086f0?q=80&w=1200&auto=format&fit=crop"
-                alt="Football Stadium"
+                src="https://images.unsplash.com/photo-1517466787929-bc90951d0974?q=80&w=1400&auto=format&fit=crop"
+                alt="Escrow Platform"
                 className="
                   rounded-3xl
-                  mb-6
                   h-[320px]
                   w-full
                   object-cover
+                  mb-6
                 "
               />
 
-              <div className="space-y-5">
+              <div className="grid grid-cols-2 gap-5">
 
                 <div
                   className="
-                    flex
-                    justify-between
-                    items-center
+                    bg-black/30
+                    rounded-3xl
+                    p-6
                   "
                 >
 
-                  <div>
+                  <p className="text-slate-400 mb-2">
+                    Protected Transactions
+                  </p>
 
-                    <p className="text-slate-400 mb-1">
-                      Match
-                    </p>
-
-                    <h2 className="text-3xl font-black">
-                      FIFA Final 2026
-                    </h2>
-
-                  </div>
-
-                  <div
-                    className="
-                      bg-green-500/20
-                      border
-                      border-green-500/30
-                      px-5
-                      py-2
-                      rounded-2xl
-                      text-green-400
-                      font-black
-                    "
-                  >
-                    VERIFIED
-                  </div>
+                  <h2 className="text-4xl font-black text-blue-400">
+                    24/7
+                  </h2>
 
                 </div>
 
                 <div
                   className="
-                    grid
-                    grid-cols-2
-                    gap-4
+                    bg-black/30
+                    rounded-3xl
+                    p-6
                   "
                 >
 
-                  <div
-                    className="
-                      bg-black/30
-                      rounded-2xl
-                      p-5
-                    "
-                  >
+                  <p className="text-slate-400 mb-2">
+                    Fraud Prevention
+                  </p>
 
-                    <p className="text-slate-400 mb-2">
-                      Escrow Protection
-                    </p>
+                  <h2 className="text-4xl font-black text-green-400">
+                    ACTIVE
+                  </h2>
 
-                    <h3 className="text-2xl font-black text-blue-400">
-                      ACTIVE
-                    </h3>
+                </div>
 
-                  </div>
+                <div
+                  className="
+                    bg-black/30
+                    rounded-3xl
+                    p-6
+                  "
+                >
 
-                  <div
-                    className="
-                      bg-black/30
-                      rounded-2xl
-                      p-5
-                    "
-                  >
+                  <p className="text-slate-400 mb-2">
+                    Instant Escrow
+                  </p>
 
-                    <p className="text-slate-400 mb-2">
-                      Fraud Prevention
-                    </p>
+                  <h2 className="text-4xl font-black text-yellow-400">
+                    LIVE
+                  </h2>
 
-                    <h3 className="text-2xl font-black text-yellow-400">
-                      SECURED
-                    </h3>
+                </div>
 
-                  </div>
+                <div
+                  className="
+                    bg-black/30
+                    rounded-3xl
+                    p-6
+                  "
+                >
+
+                  <p className="text-slate-400 mb-2">
+                    Global Payments
+                  </p>
+
+                  <h2 className="text-4xl font-black text-purple-400">
+                    FAST
+                  </h2>
 
                 </div>
 
@@ -279,7 +266,7 @@ export default function HomePage() {
 
       </section>
 
-      {/* HOW IT WORKS */}
+      {/* USE CASES */}
       <section className="px-6 py-28 bg-slate-950">
 
         <div className="max-w-7xl mx-auto">
@@ -287,11 +274,68 @@ export default function HomePage() {
           <div className="text-center mb-20">
 
             <h2 className="text-6xl font-black mb-6">
-              How Ticket Escrow Works
+              Popular Escrow Transactions
             </h2>
 
             <p className="text-slate-400 text-xl">
-              Safe transactions for premium football tickets
+              Secure high-value online deals
+            </p>
+
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+            {[
+              "FIFA World Cup Tickets",
+              "Concert & Event Tickets",
+              "Cars & Vehicles",
+              "Electronics & Phones",
+              "Freelance Services",
+              "Digital Assets & Domains",
+            ].map((item) => (
+
+              <div
+                key={item}
+                className="
+                  bg-black/40
+                  border
+                  border-white/10
+                  rounded-3xl
+                  p-8
+                "
+              >
+
+                <h3 className="text-3xl font-black mb-4">
+                  {item}
+                </h3>
+
+                <p className="text-slate-400 leading-relaxed">
+                  Secure escrow protection for both buyers and sellers.
+                </p>
+
+              </div>
+
+            ))}
+
+          </div>
+
+        </div>
+
+      </section>
+
+      {/* HOW IT WORKS */}
+      <section className="px-6 py-28 bg-black">
+
+        <div className="max-w-7xl mx-auto">
+
+          <div className="text-center mb-20">
+
+            <h2 className="text-6xl font-black mb-6">
+              How Escrow Works
+            </h2>
+
+            <p className="text-slate-400 text-xl">
+              Safe and transparent transaction flow
             </p>
 
           </div>
@@ -301,30 +345,30 @@ export default function HomePage() {
             {[
               {
                 step: "1",
-                title: "Create Transaction",
-                desc: "Buyer opens a secure escrow transaction and invites seller.",
+                title: "Create Deal",
+                desc: "Buyer opens escrow transaction and invites seller.",
               },
               {
                 step: "2",
                 title: "Buyer Pays",
-                desc: "Payment is secured by escrow before ticket delivery.",
+                desc: "Funds are secured under escrow protection.",
               },
               {
                 step: "3",
-                title: "Seller Transfers",
-                desc: "Seller safely transfers FIFA tickets after escrow security.",
+                title: "Seller Delivers",
+                desc: "Seller safely sends goods/services/assets.",
               },
               {
                 step: "4",
                 title: "Buyer Confirms",
-                desc: "Buyer confirms successful ticket delivery.",
+                desc: "Buyer confirms successful delivery.",
               },
             ].map((item) => (
 
               <div
                 key={item.step}
                 className="
-                  bg-black/40
+                  bg-slate-900
                   border
                   border-white/10
                   rounded-3xl
@@ -337,8 +381,7 @@ export default function HomePage() {
                     w-16
                     h-16
                     rounded-2xl
-                    bg-yellow-500
-                    text-black
+                    bg-blue-600
                     flex
                     items-center
                     justify-center
@@ -369,7 +412,7 @@ export default function HomePage() {
       </section>
 
       {/* PAYMENT METHODS */}
-      <section className="px-6 py-24 bg-black">
+      <section className="px-6 py-24 bg-slate-950">
 
         <div className="max-w-7xl mx-auto">
 
@@ -380,7 +423,7 @@ export default function HomePage() {
             </h2>
 
             <p className="text-slate-400 text-xl">
-              Fast international and local transfers
+              International and local transfer support
             </p>
 
           </div>
@@ -401,7 +444,7 @@ export default function HomePage() {
               <div
                 key={method}
                 className="
-                  bg-slate-900
+                  bg-black/40
                   border
                   border-white/10
                   rounded-3xl
