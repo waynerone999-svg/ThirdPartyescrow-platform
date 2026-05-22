@@ -33,28 +33,31 @@ export default function AdminLoginPage() {
       const { data, error } =
         await supabase
           .from("admins")
-          .select("*")
-          .eq(
-            "email",
-            email.trim()
-          )
-          .single();
+          .select("*");
 
-      if (error || !data) {
+      console.log(data);
 
-        alert("Admin not found");
+      if (error) {
+
+        console.log(error);
+
+        alert(error.message);
 
         setLoading(false);
 
         return;
       }
 
-      if (
-        data.password !==
-        password.trim()
-      ) {
+      const admin =
+        data?.find(
+          (a) =>
+            a.email === email &&
+            a.password === password
+        );
 
-        alert("Wrong password");
+      if (!admin) {
+
+        alert("Admin not found");
 
         setLoading(false);
 
@@ -78,112 +81,44 @@ export default function AdminLoginPage() {
 
   return (
 
-    <main
-      className="
-        min-h-screen
-        bg-slate-950
-        text-white
-        flex
-        items-center
-        justify-center
-        p-6
-      "
-    >
+    <main className="min-h-screen bg-slate-950 text-white flex items-center justify-center p-6">
 
-      <div
-        className="
-          w-full
-          max-w-md
-          bg-slate-900
-          border
-          border-white/10
-          rounded-[40px]
-          p-10
-        "
-      >
+      <div className="w-full max-w-md bg-slate-900 border border-white/10 rounded-[40px] p-10">
 
-        <div className="mb-10 text-center">
-
-          <h1 className="text-5xl font-black mb-4">
-            Admin Login
-          </h1>
-
-          <p className="text-slate-400">
-            3rdParty Escrow Security Center
-          </p>
-
-        </div>
+        <h1 className="text-5xl font-black mb-10 text-center">
+          Admin Login
+        </h1>
 
         <div className="space-y-6">
 
           <input
             type="email"
-
             placeholder="Admin Email"
-
             value={email}
-
             onChange={(e) =>
-              setEmail(
-                e.target.value
-              )
+              setEmail(e.target.value)
             }
-
-            className="
-              w-full
-              bg-slate-800
-              border
-              border-white/10
-              rounded-2xl
-              px-5
-              py-4
-              outline-none
-            "
+            className="w-full bg-slate-800 border border-white/10 rounded-2xl px-5 py-4"
           />
 
           <input
             type="password"
-
             placeholder="Password"
-
             value={password}
-
             onChange={(e) =>
-              setPassword(
-                e.target.value
-              )
+              setPassword(e.target.value)
             }
-
-            className="
-              w-full
-              bg-slate-800
-              border
-              border-white/10
-              rounded-2xl
-              px-5
-              py-4
-              outline-none
-            "
+            className="w-full bg-slate-800 border border-white/10 rounded-2xl px-5 py-4"
           />
 
           <button
             onClick={loginAdmin}
-
             disabled={loading}
-
-            className="
-              w-full
-              bg-blue-600
-              hover:bg-blue-700
-              rounded-2xl
-              py-4
-              font-black
-              text-lg
-            "
+            className="w-full bg-blue-600 hover:bg-blue-700 rounded-2xl py-4 font-black"
           >
 
             {loading
-              ? "Signing In..."
+              ? "Logging in..."
               : "Login Admin"}
 
           </button>
