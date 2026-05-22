@@ -87,68 +87,26 @@ export default function NewTransactionPage() {
       return;
     }
 
-    /* INVITE LINK */
-    const inviteLink =
-      "http://localhost:3000/register?invited=true";
+    /* SEND INVITATION EMAIL */
 
-    /* EMAIL */
-    await fetch("/api/send-email", {
+    await fetch("/api/send-invite", {
 
       method: "POST",
 
       headers: {
-        "Content-Type":
-          "application/json",
+        "Content-Type": "application/json",
       },
 
       body: JSON.stringify({
 
-        to: sellerEmail,
+        email: sellerEmail,
 
-        subject:
-          "Escrow Transaction Invitation",
+        transactionId:
+          data.id,
 
-        html: `
-          <div style="font-family:sans-serif;padding:20px">
+        transactionName:
+          transactionName,
 
-            <h1>
-              You have been invited
-              to an escrow transaction
-            </h1>
-
-            <p>
-              Transaction:
-              ${transactionName}
-            </p>
-
-            <p>
-              Amount:
-              $${amount}
-            </p>
-
-            <p>
-              Create your account
-              below to continue:
-            </p>
-
-            <a
-              href="${inviteLink}"
-              style="
-                display:inline-block;
-                margin-top:20px;
-                background:#2563eb;
-                color:white;
-                padding:14px 24px;
-                border-radius:12px;
-                text-decoration:none;
-                font-weight:bold;
-              "
-            >
-              Create Account
-            </a>
-
-          </div>
-        `,
       }),
     });
 
