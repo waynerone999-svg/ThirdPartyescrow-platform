@@ -15,7 +15,8 @@ export default function TransactionPage() {
 
   const params = useParams();
 
-  const transactionId = Number(params.id);
+  const transactionId =
+    Number(params.id);
 
   const [transaction, setTransaction] =
     useState<any>(null);
@@ -43,26 +44,62 @@ export default function TransactionPage() {
 
   async function loadTransaction() {
 
-    const { data } = await supabase
-      .from("transactions")
-      .select("*")
-      .eq("id", transactionId)
-      .single();
+    try {
 
-    if (!data) return;
+      const { data, error } =
+        await supabase
+          .from("transactions")
+          .select("*")
+          .eq("id", transactionId)
+          .single();
 
-    setTransaction(data);
+      if (error || !data) {
 
-    if (
-      user?.email === data.buyer_email
-    ) {
-      setRole("buyer");
-    }
+        console.log(error);
 
-    if (
-      user?.email === data.seller_email
-    ) {
-      setRole("seller");
+        setTransaction("not-found");
+
+        return;
+      }
+
+      const currentEmail =
+        user?.email?.toLowerCase();
+
+      const buyerEmail =
+        data.buyer_email?.toLowerCase();
+
+      const sellerEmail =
+        data.seller_email?.toLowerCase();
+
+      if (
+        currentEmail !== buyerEmail &&
+        currentEmail !== sellerEmail
+      ) {
+
+        setTransaction("unauthorized");
+
+        return;
+      }
+
+      setTransaction(data);
+
+      if (
+        currentEmail === buyerEmail
+      ) {
+        setRole("buyer");
+      }
+
+      if (
+        currentEmail === sellerEmail
+      ) {
+        setRole("seller");
+      }
+
+    } catch (err) {
+
+      console.log(err);
+
+      setTransaction("error");
     }
   }
 
@@ -92,23 +129,27 @@ export default function TransactionPage() {
 
     if (!message.trim()) return;
 
-    const { error } = await supabase
-      .from("messages")
-      .insert([
-        {
-          transaction_id:
-            transactionId,
+    const { error } =
+      await supabase
+        .from("messages")
+        .insert([
+          {
+            transaction_id:
+              transactionId,
 
-          sender:
-            user?.email,
+            sender:
+              user?.email,
 
-          message,
-        },
-      ]);
+            message,
+          },
+        ]);
 
     if (error) {
+
       console.log(error);
+
       alert(error.message);
+
       return;
     }
 
@@ -213,13 +254,49 @@ export default function TransactionPage() {
 
   }, [user]);
 
-  if (!transaction) {
+  if (transaction === null) {
 
     return (
 
       <main className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
 
-        Loading...
+        Loading Transaction...
+
+      </main>
+    );
+  }
+
+  if (transaction === "not-found") {
+
+    return (
+
+      <main className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
+
+        Transaction not found.
+
+      </main>
+    );
+  }
+
+  if (transaction === "unauthorized") {
+
+    return (
+
+      <main className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
+
+        You are not part of this transaction.
+
+      </main>
+    );
+  }
+
+  if (transaction === "error") {
+
+    return (
+
+      <main className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
+
+        Failed to load transaction.
 
       </main>
     );
