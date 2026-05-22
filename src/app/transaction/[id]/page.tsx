@@ -239,6 +239,8 @@ export default function TransactionPage() {
 
           loadMessages();
 
+          loadTransaction();
+
         }
       )
 
@@ -348,6 +350,56 @@ export default function TransactionPage() {
           </div>
 
         </div>
+
+        {/* COMPLETED */}
+        {transaction.status === "completed" && (
+
+          <div
+            className="
+              mb-8
+              bg-blue-900/30
+              border
+              border-blue-500
+              rounded-3xl
+              p-6
+            "
+          >
+
+            <h2 className="text-3xl font-black text-blue-400 mb-2">
+              TRANSACTION COMPLETED
+            </h2>
+
+            <p className="text-slate-300">
+              Assets and payment were successfully exchanged through escrow.
+            </p>
+
+          </div>
+        )}
+
+        {/* DISPUTED */}
+        {transaction.status === "disputed" && (
+
+          <div
+            className="
+              mb-8
+              bg-red-900/30
+              border
+              border-red-500
+              rounded-3xl
+              p-6
+            "
+          >
+
+            <h2 className="text-3xl font-black text-red-400 mb-2">
+              TRANSACTION DISPUTED
+            </h2>
+
+            <p className="text-slate-300">
+              Escrow administrators may review this transaction.
+            </p>
+
+          </div>
+        )}
 
         {/* CHAT */}
         <div
@@ -551,7 +603,7 @@ export default function TransactionPage() {
                   font-bold
                 "
               >
-                Confirm Received
+                YES, CONFIRM RECEIVED
               </button>
 
               <button
@@ -566,7 +618,7 @@ export default function TransactionPage() {
                   font-bold
                 "
               >
-                File Complaint
+                NO, FILE DISPUTE
               </button>
 
             </>
