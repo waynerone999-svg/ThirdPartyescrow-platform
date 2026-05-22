@@ -17,15 +17,20 @@ export default function TransactionPage() {
 
   const transactionId = Number(params.id);
 
-  const [transaction, setTransaction] = useState<any>(null);
+  const [transaction, setTransaction] =
+    useState<any>(null);
 
-  const [messages, setMessages] = useState<any[]>([]);
+  const [messages, setMessages] =
+    useState<any[]>([]);
 
-  const [message, setMessage] = useState("");
+  const [message, setMessage] =
+    useState("");
 
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] =
+    useState<any>(null);
 
-  const [role, setRole] = useState("");
+  const [role, setRole] =
+    useState("");
 
   async function getUser() {
 
@@ -48,24 +53,32 @@ export default function TransactionPage() {
 
     setTransaction(data);
 
-    if (user?.email === data.buyer_email) {
+    if (
+      user?.email === data.buyer_email
+    ) {
       setRole("buyer");
     }
 
-    if (user?.email === data.seller_email) {
+    if (
+      user?.email === data.seller_email
+    ) {
       setRole("seller");
     }
   }
 
   async function loadMessages() {
 
-    const { data, error } = await supabase
-      .from("messages")
-      .select("*")
-      .eq("transaction_id", transactionId)
-      .order("id", {
-        ascending: true,
-      });
+    const { data, error } =
+      await supabase
+        .from("messages")
+        .select("*")
+        .eq(
+          "transaction_id",
+          transactionId
+        )
+        .order("id", {
+          ascending: true,
+        });
 
     if (error) {
       console.log(error);
@@ -83,11 +96,13 @@ export default function TransactionPage() {
       .from("messages")
       .insert([
         {
-          transaction_id: transactionId,
+          transaction_id:
+            transactionId,
 
-          sender: user?.email,
+          sender:
+            user?.email,
 
-          message: message,
+          message,
         },
       ]);
 
@@ -166,7 +181,9 @@ export default function TransactionPage() {
 
     const channel = supabase
 
-      .channel(`messages-${transactionId}`)
+      .channel(
+        `messages-${transactionId}`
+      )
 
       .on(
         "postgres_changes",
@@ -188,7 +205,9 @@ export default function TransactionPage() {
 
     return () => {
 
-      supabase.removeChannel(channel);
+      supabase.removeChannel(
+        channel
+      );
 
     };
 
@@ -222,15 +241,21 @@ export default function TransactionPage() {
           <div className="space-y-2 text-slate-300">
 
             <p>
-              Amount: ${transaction.amount}
+              Amount:
+              {" "}
+              ${transaction.amount}
             </p>
 
             <p>
-              Status: {transaction.status}
+              Status:
+              {" "}
+              {transaction.status}
             </p>
 
             <p>
-              Escrow Code: {transaction.transaction_code}
+              Escrow Code:
+              {" "}
+              {transaction.transaction_code}
             </p>
 
             <p>
@@ -266,7 +291,8 @@ export default function TransactionPage() {
             {messages.map((msg) => {
 
               const mine =
-                msg.sender === user?.email;
+                msg.sender ===
+                user?.email;
 
               return (
 
@@ -358,8 +384,10 @@ export default function TransactionPage() {
         {/* ACTIONS */}
         <div className="flex flex-wrap gap-4">
 
+          {/* BUYER PAID */}
           {role === "buyer" &&
-            transaction.status === "pending" && (
+            transaction.status ===
+              "pending" && (
 
             <button
               onClick={buyerPaid}
@@ -377,27 +405,60 @@ export default function TransactionPage() {
             </button>
           )}
 
+          {/* SELLER RELEASE */}
           {role === "seller" &&
             transaction.status === "paid" && (
 
-            <button
-              onClick={sellerReleased}
-
+            <div
               className="
-                bg-yellow-600
-                hover:bg-yellow-700
-                px-8
-                py-4
-                rounded-2xl
-                font-bold
+                bg-green-900/30
+                border
+                border-green-500
+                rounded-3xl
+                p-6
+                space-y-5
+                w-full
+                max-w-xl
               "
             >
-              I Have Released
-            </button>
+
+              <div>
+
+                <h2 className="text-2xl font-black text-green-400 mb-2">
+                  ASSETS PAID AND SECURED BY ESCROW
+                </h2>
+
+                <p className="text-slate-300">
+                  Buyer payment has been confirmed.
+                  You can now safely release
+                  the agreed assets/services.
+                </p>
+
+              </div>
+
+              <button
+                onClick={sellerReleased}
+
+                className="
+                  bg-yellow-500
+                  hover:bg-yellow-600
+                  text-black
+                  px-8
+                  py-4
+                  rounded-2xl
+                  font-black
+                "
+              >
+                Release Assets
+              </button>
+
+            </div>
           )}
 
+          {/* BUYER CONFIRM */}
           {role === "buyer" &&
-            transaction.status === "released" && (
+            transaction.status ===
+              "released" && (
 
             <>
 
