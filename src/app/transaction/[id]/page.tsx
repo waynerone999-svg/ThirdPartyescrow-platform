@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
 import { useParams } from "next/navigation";
-
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
@@ -32,6 +30,10 @@ export default function TransactionPage() {
 
   const [role, setRole] =
     useState("");
+
+  /* ADMIN EMAIL */
+  const adminEmail =
+    "waynerone999@gmail.com";
 
   async function getUser() {
 
@@ -71,9 +73,11 @@ export default function TransactionPage() {
       const sellerEmail =
         data.seller_email?.toLowerCase();
 
+      /* ACCESS SECURITY */
       if (
         currentEmail !== buyerEmail &&
-        currentEmail !== sellerEmail
+        currentEmail !== sellerEmail &&
+        currentEmail !== adminEmail
       ) {
 
         setTransaction("unauthorized");
@@ -93,6 +97,12 @@ export default function TransactionPage() {
         currentEmail === sellerEmail
       ) {
         setRole("seller");
+      }
+
+      if (
+        currentEmail === adminEmail
+      ) {
+        setRole("admin");
       }
 
     } catch (err) {
@@ -118,7 +128,9 @@ export default function TransactionPage() {
         });
 
     if (error) {
+
       console.log(error);
+
       return;
     }
 
@@ -195,6 +207,32 @@ export default function TransactionPage() {
   }
 
   async function fileComplaint() {
+
+    await supabase
+      .from("transactions")
+      .update({
+        status: "disputed",
+      })
+      .eq("id", transactionId);
+
+    loadTransaction();
+  }
+
+  /* ADMIN FORCE COMPLETE */
+  async function adminComplete() {
+
+    await supabase
+      .from("transactions")
+      .update({
+        status: "completed",
+      })
+      .eq("id", transactionId);
+
+    loadTransaction();
+  }
+
+  /* ADMIN FORCE DISPUTE */
+  async function adminDispute() {
 
     await supabase
       .from("transactions")
@@ -359,6 +397,31 @@ export default function TransactionPage() {
 
           </div>
 
+          {/* ADMIN ACCESS */}
+          {role === "admin" && (
+
+            <div
+              className="
+                mt-6
+                bg-purple-900/30
+                border
+                border-purple-500
+                rounded-3xl
+                p-5
+              "
+            >
+
+              <h2 className="text-2xl font-black text-purple-400 mb-2">
+                ADMIN ACCESS
+              </h2>
+
+              <p className="text-slate-300">
+                You are viewing this transaction as escrow administrator.
+              </p>
+
+            </div>
+          )}
+
         </div>
 
         {/* COMPLETED */}
@@ -378,10 +441,6 @@ export default function TransactionPage() {
             <h2 className="text-3xl font-black text-blue-400 mb-2">
               TRANSACTION COMPLETED
             </h2>
-
-            <p className="text-slate-300">
-              Assets and payment were successfully exchanged through escrow.
-            </p>
 
           </div>
         )}
@@ -403,10 +462,6 @@ export default function TransactionPage() {
             <h2 className="text-3xl font-black text-red-400 mb-2">
               TRANSACTION DISPUTED
             </h2>
-
-            <p className="text-slate-300">
-              Escrow administrators may review this transaction.
-            </p>
 
           </div>
         )}
@@ -463,7 +518,7 @@ export default function TransactionPage() {
                       {msg.sender ===
                         transaction.buyer_email
                           ? "Buyer"
-                          : "Seller"}
+                          : "Seller/Admin"}
 
                     </p>
 
@@ -523,10 +578,8 @@ export default function TransactionPage() {
         {/* ACTIONS */}
         <div className="flex flex-wrap gap-4">
 
-          {/* BUYER PAID */}
           {role === "buyer" &&
-            transaction.status ===
-              "pending" && (
+            transaction.status === "pending" && (
 
             <button
               onClick={buyerPaid}
@@ -544,7 +597,6 @@ export default function TransactionPage() {
             </button>
           )}
 
-          {/* SELLER RELEASE */}
           {role === "seller" &&
             transaction.status === "paid" && (
 
@@ -561,19 +613,9 @@ export default function TransactionPage() {
               "
             >
 
-              <div>
-
-                <h2 className="text-2xl font-black text-green-400 mb-2">
-                  ASSETS PAID AND SECURED BY ESCROW
-                </h2>
-
-                <p className="text-slate-300">
-                  Buyer payment has been confirmed.
-                  You can now safely release
-                  the agreed assets/services.
-                </p>
-
-              </div>
+              <h2 className="text-2xl font-black text-green-400">
+                ASSETS PAID AND SECURED BY ESCROW
+              </h2>
 
               <button
                 onClick={sellerReleased}
@@ -594,10 +636,8 @@ export default function TransactionPage() {
             </div>
           )}
 
-          {/* BUYER CONFIRM */}
           {role === "buyer" &&
-            transaction.status ===
-              "released" && (
+            transaction.status === "released" && (
 
             <>
 
@@ -633,6 +673,44 @@ export default function TransactionPage() {
 
             </>
 
+          )}
+
+          {/* ADMIN CONTROLS */}
+          {role === "admin" && (
+
+            <div className="flex gap-4 mt-4">
+
+              <button
+                onClick={adminComplete}
+
+                className="
+                  bg-blue-600
+                  hover:bg-blue-700
+                  px-8
+                  py-4
+                  rounded-2xl
+                  font-bold
+                "
+              >
+                FORCE COMPLETE
+              </button>
+
+              <button
+                onClick={adminDispute}
+
+                className="
+                  bg-red-600
+                  hover:bg-red-700
+                  px-8
+                  py-4
+                  rounded-2xl
+                  font-bold
+                "
+              >
+                FORCE DISPUTE
+              </button>
+
+            </div>
           )}
 
         </div>
