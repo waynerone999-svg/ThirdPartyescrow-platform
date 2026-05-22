@@ -6,7 +6,7 @@ export default function HomePage() {
 
   return (
 
-    <main className="min-h-screen bg-slate-950 text-white overflow-hidden">
+    <main className="min-h-screen bg-[#020617] text-white overflow-hidden">
 
       {/* HERO */}
       <section
@@ -27,7 +27,7 @@ export default function HomePage() {
             inset-0
             bg-gradient-to-br
             from-slate-950
-            via-black
+            via-[#020617]
             to-blue-950
           "
         />
@@ -37,9 +37,9 @@ export default function HomePage() {
           className="
             absolute
             top-[-200px]
-            right-[-100px]
-            w-[500px]
-            h-[500px]
+            right-[-150px]
+            w-[600px]
+            h-[600px]
             bg-blue-600/20
             rounded-full
             blur-3xl
@@ -48,14 +48,14 @@ export default function HomePage() {
 
         <div
           className="
+            relative
+            z-10
             max-w-7xl
             mx-auto
             grid
             lg:grid-cols-2
             gap-20
             items-center
-            relative
-            z-10
           "
         >
 
@@ -67,7 +67,7 @@ export default function HomePage() {
                 inline-flex
                 items-center
                 gap-2
-                bg-blue-600/20
+                bg-blue-600/10
                 border
                 border-blue-500/30
                 px-5
@@ -78,7 +78,7 @@ export default function HomePage() {
                 mb-8
               "
             >
-              TRUSTED GLOBAL ESCROW PLATFORM
+              TRUSTED GLOBAL ESCROW SERVICE
             </div>
 
             <h1
@@ -90,13 +90,10 @@ export default function HomePage() {
                 mb-8
               "
             >
-              Secure
+              3rdParty
               <br />
 
-              High-Value
-              <br />
-
-              Transactions
+              Escrow
             </h1>
 
             <p
@@ -108,10 +105,11 @@ export default function HomePage() {
                 max-w-2xl
               "
             >
-              Safely buy and sell FIFA tickets, concert tickets,
-              electronics, vehicles, freelance services,
-              digital assets and international deals using
-              secure escrow protection.
+              Secure escrow protection for buyers and sellers
+              who are strangers to each other. We help both
+              parties transact safely by protecting payments
+              until goods, tickets, services or digital assets
+              are successfully delivered.
             </p>
 
             <div className="flex flex-wrap gap-5">
@@ -129,7 +127,7 @@ export default function HomePage() {
                     text-lg
                   "
                 >
-                  Start Transaction
+                  Create Account
                 </button>
 
               </Link>
@@ -157,12 +155,12 @@ export default function HomePage() {
 
           </div>
 
-          {/* RIGHT SIDE */}
+          {/* RIGHT */}
           <div className="relative">
 
             <div
               className="
-                bg-slate-900/80
+                bg-white/5
                 border
                 border-white/10
                 backdrop-blur-xl
@@ -171,91 +169,77 @@ export default function HomePage() {
               "
             >
 
-              <img
-                src="https://images.unsplash.com/photo-1517466787929-bc90951d0974?q=80&w=1400&auto=format&fit=crop"
-                alt="Escrow"
+              <div
                 className="
+                  bg-slate-900
                   rounded-3xl
-                  h-[320px]
-                  w-full
-                  object-cover
+                  p-8
                   mb-6
                 "
-              />
+              >
 
-              <div className="space-y-5">
+                <div className="flex justify-between mb-4">
+
+                  <span className="text-slate-400">
+                    Escrow Status
+                  </span>
+
+                  <span className="text-green-400 font-black">
+                    SECURED
+                  </span>
+
+                </div>
+
+                <h2 className="text-4xl font-black mb-4">
+                  Protected Transaction
+                </h2>
+
+                <p className="text-slate-400 leading-relaxed">
+                  Funds remain protected until both parties
+                  complete the transaction successfully.
+                </p>
+
+              </div>
+
+              <div className="grid grid-cols-2 gap-5">
 
                 <div
                   className="
-                    bg-slate-800
+                    bg-blue-600/20
+                    border
+                    border-blue-500/20
                     rounded-3xl
                     p-6
                   "
                 >
 
-                  <div className="flex justify-between mb-3">
+                  <h3 className="text-4xl font-black mb-2">
+                    24/7
+                  </h3>
 
-                    <span className="text-slate-400">
-                      Transaction Status
-                    </span>
-
-                    <span className="text-green-400 font-bold">
-                      SECURED
-                    </span>
-
-                  </div>
-
-                  <h2 className="text-3xl font-black mb-3">
-                    Escrow Protection Active
-                  </h2>
-
-                  <p className="text-slate-400">
-                    Funds remain protected until delivery confirmation.
+                  <p className="text-slate-300">
+                    Fraud Monitoring
                   </p>
 
                 </div>
 
-                <div className="grid grid-cols-2 gap-5">
+                <div
+                  className="
+                    bg-green-600/20
+                    border
+                    border-green-500/20
+                    rounded-3xl
+                    p-6
+                  "
+                >
 
-                  <div
-                    className="
-                      bg-blue-600/20
-                      border
-                      border-blue-500/20
-                      rounded-3xl
-                      p-6
-                    "
-                  >
+                  <h3 className="text-4xl font-black mb-2">
+                    Instant
+                  </h3>
 
-                    <h3 className="text-4xl font-black mb-2">
-                      24/7
-                    </h3>
-
-                    <p className="text-slate-300">
-                      Monitoring
-                    </p>
-
-                  </div>
-
-                  <div
-                    className="
-                      bg-green-600/20
-                      border
-                      border-green-500/20
-                      rounded-3xl
-                      p-6
-                    "
-                  >
-
-                    <h3 className="text-4xl font-black mb-2">
-                      Instant
-                    </h3>
-
-                    <p className="text-slate-300">
-                      Verification
-                    </p>
-
-                  </div>
+                  <p className="text-slate-300">
+                    Escrow Protection
+                  </p>
 
                 </div>
 
@@ -269,7 +253,7 @@ export default function HomePage() {
 
       </section>
 
-      {/* HOW IT WORKS */}
+      {/* SERVICES */}
       <section className="px-6 py-28 bg-black">
 
         <div className="max-w-7xl mx-auto">
@@ -277,11 +261,68 @@ export default function HomePage() {
           <div className="text-center mb-20">
 
             <h2 className="text-6xl font-black mb-6">
-              How Escrow Works
+              What We Protect
             </h2>
 
             <p className="text-slate-400 text-xl">
-              Fast, secure and transparent transactions
+              Safe transactions for high-value deals
+            </p>
+
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+            {[
+              "FIFA & Concert Tickets",
+              "Electronics & Phones",
+              "Vehicles & Cars",
+              "Freelance Services",
+              "Digital Assets",
+              "International Deals",
+            ].map((item) => (
+
+              <div
+                key={item}
+                className="
+                  bg-slate-900
+                  border
+                  border-white/10
+                  rounded-3xl
+                  p-8
+                "
+              >
+
+                <h3 className="text-3xl font-black mb-4">
+                  {item}
+                </h3>
+
+                <p className="text-slate-400 leading-relaxed">
+                  Secure escrow protection for both buyer and seller.
+                </p>
+
+              </div>
+
+            ))}
+
+          </div>
+
+        </div>
+
+      </section>
+
+      {/* HOW IT WORKS */}
+      <section className="px-6 py-28 bg-slate-950">
+
+        <div className="max-w-7xl mx-auto">
+
+          <div className="text-center mb-20">
+
+            <h2 className="text-6xl font-black mb-6">
+              How It Works
+            </h2>
+
+            <p className="text-slate-400 text-xl">
+              Simple, trusted and secure escrow flow
             </p>
 
           </div>
@@ -291,30 +332,30 @@ export default function HomePage() {
             {[
               {
                 step: "1",
-                title: "Create Deal",
-                desc: "Buyer creates transaction and invites seller.",
+                title: "Open Transaction",
+                desc: "Buyer creates escrow transaction and invites seller.",
               },
               {
                 step: "2",
                 title: "Buyer Pays",
-                desc: "Funds become secured by escrow protection.",
+                desc: "Payment becomes protected by escrow.",
               },
               {
                 step: "3",
                 title: "Seller Delivers",
-                desc: "Seller safely delivers product or service.",
+                desc: "Seller safely delivers goods or services.",
               },
               {
                 step: "4",
                 title: "Buyer Confirms",
-                desc: "Transaction completes after confirmation.",
+                desc: "Transaction completes after successful confirmation.",
               },
             ].map((item) => (
 
               <div
                 key={item.step}
                 className="
-                  bg-slate-900
+                  bg-black/40
                   border
                   border-white/10
                   rounded-3xl
@@ -357,8 +398,8 @@ export default function HomePage() {
 
       </section>
 
-      {/* PAYMENT METHODS */}
-      <section className="px-6 py-24 bg-slate-950">
+      {/* PAYMENTS */}
+      <section className="px-6 py-24 bg-black">
 
         <div className="max-w-7xl mx-auto">
 
@@ -369,7 +410,7 @@ export default function HomePage() {
             </h2>
 
             <p className="text-slate-400 text-xl">
-              Fast local and international transfers
+              Fast international and local payments
             </p>
 
           </div>
@@ -390,7 +431,7 @@ export default function HomePage() {
               <div
                 key={method}
                 className="
-                  bg-black/40
+                  bg-slate-900
                   border
                   border-white/10
                   rounded-3xl
@@ -406,6 +447,33 @@ export default function HomePage() {
             ))}
 
           </div>
+
+        </div>
+
+      </section>
+
+      {/* TERMS */}
+      <section className="px-6 py-24 bg-slate-950 border-t border-white/10">
+
+        <div className="max-w-5xl mx-auto text-center">
+
+          <h2 className="text-5xl font-black mb-8">
+            Terms & Trust
+          </h2>
+
+          <p className="text-slate-400 text-lg leading-relaxed mb-8">
+            3rdParty Escrow acts as a neutral intermediary
+            between buyer and seller. Funds remain protected
+            until delivery is confirmed. Fraudulent activity,
+            chargeback abuse, fake deliveries and illegal
+            transactions are prohibited and may result in
+            permanent account suspension.
+          </p>
+
+          <p className="text-slate-500">
+            By using this platform you agree to our escrow terms,
+            dispute handling process and transaction policies.
+          </p>
 
         </div>
 
