@@ -2,6 +2,10 @@
 
 import { useEffect, useState } from "react";
 
+import Link from "next/link";
+
+import { useRouter } from "next/navigation";
+
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
@@ -9,17 +13,51 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-export default function SellerDashboardPage() {
+export default function SellerDashboard() {
+
+  const router = useRouter();
+
+  const [user, setUser] =
+    useState<any>(null);
 
   const [transactions, setTransactions] =
     useState<any[]>([]);
 
-  async function loadTransactions() {
+  const [loading, setLoading] =
+    useState(true);
 
-    const { data, error } = await supabase
-      .from("transactions")
-      .select("*")
-      .order("id", { ascending: false });
+  async function loadSellerTransactions() {
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+
+      router.push("/login");
+
+      return;
+    }
+
+    setUser(user);
+
+    /* ONLY THIS SELLER'S DEALS */
+
+    const { data, error } =
+      await supabase
+
+        .from("transactions")
+
+        .select("*")
+
+        .eq(
+          "seller_email",
+          user.email
+        )
+
+        .order("id", {
+          ascending: false,
+        });
 
     if (error) {
 
@@ -29,145 +67,182 @@ export default function SellerDashboardPage() {
     }
 
     setTransactions(data || []);
-  }
 
-  async function acceptTransaction(id: number) {
-
-    const { error } = await supabase
-      .from("transactions")
-      .update({
-        status: "accepted",
-      })
-      .eq("id", id);
-
-    if (error) {
-
-      console.log(error);
-
-      alert("Failed to accept");
-
-      return;
-    }
-
-    // FORCE REDIRECT
-    window.location.href =
-      "/transaction-chat";
+    setLoading(false);
   }
 
   useEffect(() => {
 
-    loadTransactions();
+    loadSellerTransactions();
 
   }, []);
 
+  if (loading) {
+
+    return (
+
+      <main
+        className="
+          min-h-screen
+          bg-slate-950
+          text-white
+          flex
+          items-center
+          justify-center
+        "
+      >
+
+        Loading Seller Requests...
+
+      </main>
+    );
+  }
+
   return (
 
-    <main className="min-h-screen bg-slate-950 text-white p-8">
+    <main
+      className="
+        min-h-screen
+        bg-slate-950
+        text-white
+        p-4
+        md:p-8
+      "
+    >
 
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-6xl mx-auto">
 
-        <div className="mb-10">
+        {/* HEADER */}
 
-          <h1 className="text-5xl font-black mb-4">
-            Seller Dashboard
+        <div className="mb-12">
+
+          <h1
+            className="
+              text-4xl
+              md:text-6xl
+              font-black
+              mb-4
+            "
+          >
+            Seller Requests
           </h1>
 
           <p className="text-slate-400 text-lg">
-            Pending escrow invitations.
+            Transactions where you are the seller
           </p>
 
         </div>
 
+        {/* EMPTY */}
+
+        {transactions.length === 0 && (
+
+          <div
+            className="
+              bg-slate-900
+              border
+              border-white/10
+              rounded-3xl
+              p-10
+              text-slate-400
+            "
+          >
+            No seller requests found.
+          </div>
+        )}
+
+        {/* TRANSACTIONS */}
+
         <div className="space-y-6">
 
-          {transactions.map((transaction) => (
+          {transactions.map((deal) => (
 
-            <div
-              key={transaction.id}
-              className="
-                bg-slate-900
-                border
-                border-white/10
-                rounded-3xl
-                p-8
-              "
+            <Link
+              key={deal.id}
+              href={`/transaction/${deal.id}`}
             >
 
-              <div className="flex justify-between items-start">
+              <div
+                className="
+                  bg-slate-900
+                  border
+                  border-white/10
+                  rounded-3xl
+                  p-6
+                  md:p-8
+                  hover:border-blue-500/40
+                  transition
+                  cursor-pointer
+                "
+              >
 
-                <div>
+                <div
+                  className="
+                    flex
+                    flex-col
+                    lg:flex-row
+                    justify-between
+                    gap-6
+                  "
+                >
 
-                  <h2 className="text-2xl font-bold mb-3">
-                    {transaction.transaction_name}
-                  </h2>
+                  <div>
 
-                  <div className="space-y-2 text-slate-300">
+                    <h2
+                      className="
+                        text-2xl
+                        md:text-3xl
+                        font-bold
+                        mb-3
+                      "
+                    >
+                      {deal.transaction_name}
+                    </h2>
 
-                    <p>
-                      <strong>Escrow Code:</strong>{" "}
-                      {transaction.transaction_code}
+                    <p className="text-slate-400">
+                      Amount:
+                      {" "}
+                      ${deal.amount}
                     </p>
 
-                    <p>
-                      <strong>Amount:</strong> $
-                      {transaction.amount}
+                    <p className="text-slate-400 mt-2">
+                      Buyer:
+                      {" "}
+                      {deal.buyer_email}
                     </p>
 
-                    <p>
-                      <strong>Status:</strong>{" "}
-                      {transaction.status}
+                    <p className="text-slate-400 mt-2">
+                      Payment:
+                      {" "}
+                      {deal.payment_method}
                     </p>
+
+                  </div>
+
+                  <div>
+
+                    <div
+                      className="
+                        bg-blue-500/20
+                        text-blue-300
+                        px-5
+                        py-2
+                        rounded-full
+                        font-bold
+                        capitalize
+                        w-fit
+                      "
+                    >
+                      {deal.status}
+                    </div>
 
                   </div>
 
                 </div>
 
-                <div>
-
-                  {transaction.status ===
-                  "pending" ? (
-
-                    <button
-                      onClick={() =>
-                        acceptTransaction(
-                          transaction.id
-                        )
-                      }
-                      className="
-                        bg-green-600
-                        hover:bg-green-700
-                        px-6
-                        py-3
-                        rounded-2xl
-                        font-bold
-                      "
-                    >
-                      Accept Transaction
-                    </button>
-
-                  ) : (
-
-                    <div
-                      className="
-                        bg-green-500/20
-                        text-green-400
-                        px-5
-                        py-3
-                        rounded-2xl
-                        font-bold
-                      "
-                    >
-                      Accepted
-                    </div>
-
-                  )}
-
-                </div>
-
               </div>
 
-            </div>
-
+            </Link>
           ))}
 
         </div>
