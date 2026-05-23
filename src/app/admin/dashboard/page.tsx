@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 
-import { useRouter } from "next/navigation";
-
 import Link from "next/link";
+
+import { useRouter } from "next/navigation";
 
 import { createClient } from "@supabase/supabase-js";
 
@@ -23,22 +23,33 @@ export default function AdminDashboard() {
   const [loading, setLoading] =
     useState(true);
 
-  const [stats, setStats] =
-    useState({
+  const adminEmail =
+    "waynerone999@gmail.com";
 
-      total: 0,
+  async function checkAdmin() {
 
-      completed: 0,
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-      disputed: 0,
+    if (!user) {
 
-      pending: 0,
+      router.push("/login");
 
-      paid: 0,
+      return;
+    }
 
-      released: 0,
+    if (
+      user.email !== adminEmail
+    ) {
 
-    });
+      router.push("/dashboard");
+
+      return;
+    }
+
+    loadTransactions();
+  }
 
   async function loadTransactions() {
 
@@ -50,58 +61,15 @@ export default function AdminDashboard() {
           ascending: false,
         });
 
-    if (error) {
+    if (!error && data) {
 
-      console.log(error);
-
-      return;
+      setTransactions(data);
     }
-
-    setTransactions(data || []);
-
-    setStats({
-
-      total:
-        data?.length || 0,
-
-      completed:
-        data?.filter(
-          (t) =>
-            t.status === "completed"
-        ).length || 0,
-
-      disputed:
-        data?.filter(
-          (t) =>
-            t.status === "disputed"
-        ).length || 0,
-
-      pending:
-        data?.filter(
-          (t) =>
-            t.status === "pending"
-        ).length || 0,
-
-      paid:
-        data?.filter(
-          (t) =>
-            t.status === "paid"
-        ).length || 0,
-
-      released:
-        data?.filter(
-          (t) =>
-            t.status === "released"
-        ).length || 0,
-
-    });
 
     setLoading(false);
   }
 
-  async function completeTransaction(
-    id: number
-  ) {
+  async function forceComplete(id: number) {
 
     await supabase
       .from("transactions")
@@ -113,9 +81,7 @@ export default function AdminDashboard() {
     loadTransactions();
   }
 
-  async function disputeTransaction(
-    id: number
-  ) {
+  async function forceDispute(id: number) {
 
     await supabase
       .from("transactions")
@@ -127,9 +93,7 @@ export default function AdminDashboard() {
     loadTransactions();
   }
 
-  async function deleteTransaction(
-    id: number
-  ) {
+  async function deleteTransaction(id: number) {
 
     const confirmDelete =
       confirm(
@@ -146,522 +110,453 @@ export default function AdminDashboard() {
     loadTransactions();
   }
 
-  function logout() {
+  async function logout() {
 
-    document.cookie =
-      "admin_logged_in=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    await supabase.auth.signOut();
 
-    router.push("/admin/login");
+    router.push("/login");
   }
 
   useEffect(() => {
 
-    loadTransactions();
+    checkAdmin();
 
   }, []);
 
-  return (
+  const total =
+    transactions.length;
 
-    <main className="min-h-screen bg-slate-950 text-white">
+  const completed =
+    transactions.filter(
+      (t) =>
+        t.status ===
+        "completed"
+    ).length;
 
-      {/* HEADER */}
-      <div
+  const disputed =
+    transactions.filter(
+      (t) =>
+        t.status ===
+        "disputed"
+    ).length;
+
+  const pending =
+    transactions.filter(
+      (t) =>
+        t.status ===
+        "pending"
+    ).length;
+
+  const paid =
+    transactions.filter(
+      (t) =>
+        t.status ===
+        "paid"
+    ).length;
+
+  const released =
+    transactions.filter(
+      (t) =>
+        t.status ===
+        "released"
+    ).length;
+
+  if (loading) {
+
+    return (
+
+      <main
         className="
-          border-b
-          border-white/10
-          px-8
-          py-6
+          min-h-screen
+          bg-black
+          text-white
           flex
           items-center
-          justify-between
+          justify-center
         "
       >
 
-        <div>
+        Loading Admin Dashboard...
 
-          <h1 className="text-5xl font-black">
-            Admin Dashboard
-          </h1>
+      </main>
+    );
+  }
 
-          <p className="text-slate-400 mt-2">
-            3rdParty Escrow Security Center
-          </p>
+  return (
 
-        </div>
+    <main
+      className="
+        min-h-screen
+        bg-[#020617]
+        text-white
+        p-4
+        md:p-8
+      "
+    >
 
-        <button
-          onClick={logout}
+      <div className="max-w-7xl mx-auto">
 
+        {/* TOPBAR */}
+        <div
           className="
-            bg-red-600
-            hover:bg-red-700
-            px-6
-            py-3
-            rounded-2xl
-            font-bold
+            flex
+            flex-col
+            md:flex-row
+            md:items-center
+            md:justify-between
+            gap-4
+            mb-10
           "
         >
-          Logout
-        </button>
 
-      </div>
+          <div>
 
-      <div className="p-8">
+            <h1
+              className="
+                text-4xl
+                md:text-6xl
+                font-black
+              "
+            >
+              Admin Dashboard
+            </h1>
+
+            <p
+              className="
+                text-slate-400
+                mt-2
+              "
+            >
+              3rdParty Escrow
+              Security Center
+            </p>
+
+          </div>
+
+          <button
+            onClick={logout}
+
+            className="
+              bg-red-600
+              hover:bg-red-700
+              px-6
+              py-3
+              rounded-2xl
+              font-bold
+              w-full
+              md:w-auto
+            "
+          >
+            Logout
+          </button>
+
+        </div>
 
         {/* STATS */}
         <div
           className="
             grid
-            md:grid-cols-2
-            lg:grid-cols-6
-            gap-6
+            grid-cols-2
+            md:grid-cols-3
+            xl:grid-cols-6
+            gap-4
             mb-10
           "
         >
 
-          <div className="bg-slate-900 rounded-3xl p-6 border border-white/10">
+          <StatCard
+            title="Total"
+            value={total}
+            color="border-white/10"
+          />
 
-            <p className="text-slate-400 mb-3">
-              Total
-            </p>
+          <StatCard
+            title="Completed"
+            value={completed}
+            color="border-green-500/30"
+          />
 
-            <h2 className="text-5xl font-black">
-              {stats.total}
-            </h2>
+          <StatCard
+            title="Disputed"
+            value={disputed}
+            color="border-red-500/30"
+          />
 
-          </div>
+          <StatCard
+            title="Pending"
+            value={pending}
+            color="border-yellow-500/30"
+          />
 
-          <div className="bg-green-900/20 border border-green-500/20 rounded-3xl p-6">
+          <StatCard
+            title="Paid"
+            value={paid}
+            color="border-blue-500/30"
+          />
 
-            <p className="text-green-400 mb-3">
-              Completed
-            </p>
-
-            <h2 className="text-5xl font-black">
-              {stats.completed}
-            </h2>
-
-          </div>
-
-          <div className="bg-red-900/20 border border-red-500/20 rounded-3xl p-6">
-
-            <p className="text-red-400 mb-3">
-              Disputed
-            </p>
-
-            <h2 className="text-5xl font-black">
-              {stats.disputed}
-            </h2>
-
-          </div>
-
-          <div className="bg-yellow-900/20 border border-yellow-500/20 rounded-3xl p-6">
-
-            <p className="text-yellow-400 mb-3">
-              Pending
-            </p>
-
-            <h2 className="text-5xl font-black">
-              {stats.pending}
-            </h2>
-
-          </div>
-
-          <div className="bg-blue-900/20 border border-blue-500/20 rounded-3xl p-6">
-
-            <p className="text-blue-400 mb-3">
-              Paid
-            </p>
-
-            <h2 className="text-5xl font-black">
-              {stats.paid}
-            </h2>
-
-          </div>
-
-          <div className="bg-purple-900/20 border border-purple-500/20 rounded-3xl p-6">
-
-            <p className="text-purple-400 mb-3">
-              Released
-            </p>
-
-            <h2 className="text-5xl font-black">
-              {stats.released}
-            </h2>
-
-          </div>
+          <StatCard
+            title="Released"
+            value={released}
+            color="border-purple-500/30"
+          />
 
         </div>
 
-        {/* DISPUTE CENTER */}
+        {/* TABLE */}
         <div
           className="
-            bg-red-900/20
-            border
-            border-red-500/20
-            rounded-[40px]
-            p-8
-            mb-10
-          "
-        >
-
-          <div className="flex items-center justify-between mb-6">
-
-            <div>
-
-              <h2 className="text-4xl font-black text-red-400">
-                Dispute Center
-              </h2>
-
-              <p className="text-slate-300 mt-2">
-                Manage disputed escrow transactions
-              </p>
-
-            </div>
-
-          </div>
-
-          <div className="space-y-5">
-
-            {transactions
-              .filter(
-                (tx) =>
-                  tx.status === "disputed"
-              )
-              .map((tx) => (
-
-                <div
-                  key={tx.id}
-
-                  className="
-                    bg-slate-900
-                    border
-                    border-white/10
-                    rounded-3xl
-                    p-6
-                    flex
-                    flex-col
-                    lg:flex-row
-                    lg:items-center
-                    lg:justify-between
-                    gap-5
-                  "
-                >
-
-                  <div>
-
-                    <h3 className="text-2xl font-black mb-2">
-                      {tx.transaction_name}
-                    </h3>
-
-                    <div className="space-y-1 text-slate-300">
-
-                      <p>
-                        Buyer:
-                        {" "}
-                        {tx.buyer_email}
-                      </p>
-
-                      <p>
-                        Seller:
-                        {" "}
-                        {tx.seller_email}
-                      </p>
-
-                      <p>
-                        Amount:
-                        {" "}
-                        ${tx.amount}
-                      </p>
-
-                      <p>
-                        Payment:
-                        {" "}
-                        {tx.payment_method}
-                      </p>
-
-                    </div>
-
-                  </div>
-
-                  <div className="flex flex-wrap gap-3">
-
-                    <button
-                      onClick={() =>
-                        completeTransaction(tx.id)
-                      }
-
-                      className="
-                        bg-green-600
-                        hover:bg-green-700
-                        px-6
-                        py-3
-                        rounded-2xl
-                        font-bold
-                      "
-                    >
-                      Resolve
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        deleteTransaction(tx.id)
-                      }
-
-                      className="
-                        bg-red-600
-                        hover:bg-red-700
-                        px-6
-                        py-3
-                        rounded-2xl
-                        font-bold
-                      "
-                    >
-                      Delete
-                    </button>
-
-                  </div>
-
-                </div>
-
-              ))}
-
-            {transactions.filter(
-              (tx) =>
-                tx.status === "disputed"
-            ).length === 0 && (
-
-              <div
-                className="
-                  bg-slate-900
-                  border
-                  border-white/10
-                  rounded-3xl
-                  p-8
-                  text-center
-                  text-slate-400
-                "
-              >
-                No active disputes.
-              </div>
-
-            )}
-
-          </div>
-
-        </div>
-
-        {/* TRANSACTION TABLE */}
-        <div
-          className="
-            bg-slate-900
+            bg-[#07122b]
             border
             border-white/10
-            rounded-[40px]
+            rounded-3xl
             overflow-hidden
           "
         >
 
-          <div className="p-8 border-b border-white/10">
+          <div
+            className="
+              p-6
+              border-b
+              border-white/10
+            "
+          >
 
-            <h2 className="text-4xl font-black">
+            <h2
+              className="
+                text-3xl
+                md:text-5xl
+                font-black
+              "
+            >
               All Transactions
             </h2>
 
           </div>
 
-          {loading ? (
+          <div className="overflow-x-auto">
 
-            <div className="p-10">
-              Loading...
-            </div>
+            <table className="w-full min-w-[1000px]">
 
-          ) : (
+              <thead
+                className="
+                  bg-[#091734]
+                  text-left
+                "
+              >
 
-            <div className="overflow-x-auto">
+                <tr>
 
-              <table className="w-full">
+                  <th className="p-6">
+                    ID
+                  </th>
 
-                <thead>
+                  <th className="p-6">
+                    Transaction
+                  </th>
 
-                  <tr className="border-b border-white/10">
+                  <th className="p-6">
+                    Amount
+                  </th>
 
-                    <th className="p-6 text-left">
-                      ID
-                    </th>
+                  <th className="p-6">
+                    Status
+                  </th>
 
-                    <th className="p-6 text-left">
-                      Transaction
-                    </th>
+                  <th className="p-6">
+                    Payment
+                  </th>
 
-                    <th className="p-6 text-left">
-                      Amount
-                    </th>
+                  <th className="p-6">
+                    Actions
+                  </th>
 
-                    <th className="p-6 text-left">
-                      Status
-                    </th>
+                </tr>
 
-                    <th className="p-6 text-left">
-                      Payment
-                    </th>
+              </thead>
 
-                    <th className="p-6 text-left">
-                      Actions
-                    </th>
+              <tbody>
 
-                  </tr>
+                {transactions.map((tx) => (
 
-                </thead>
+                  <tr
+                    key={tx.id}
 
-                <tbody>
+                    className="
+                      border-t
+                      border-white/5
+                    "
+                  >
 
-                  {transactions.map((tx) => (
+                    <td className="p-6 font-bold">
+                      #{tx.id}
+                    </td>
 
-                    <tr
-                      key={tx.id}
-                      className="border-b border-white/5"
-                    >
+                    <td className="p-6">
 
-                      <td className="p-6">
-                        #{tx.id}
-                      </td>
+                      <div className="font-bold text-xl">
+                        {tx.transaction_name}
+                      </div>
 
-                      <td className="p-6">
+                      <div className="text-slate-400 text-sm mt-1">
+                        {tx.buyer_email}
+                      </div>
 
-                        <div>
+                    </td>
 
-                          <p className="font-bold">
-                            {tx.transaction_name}
-                          </p>
+                    <td className="p-6 text-2xl font-bold">
+                      ${tx.amount}
+                    </td>
 
-                          <p className="text-sm text-slate-400 mt-1">
-                            {tx.buyer_email}
-                          </p>
+                    <td className="p-6">
 
-                        </div>
+                      <span
+                        className="
+                          px-5
+                          py-2
+                          rounded-full
+                          text-sm
+                          font-bold
+                          bg-slate-800
+                        "
+                      >
+                        {tx.status}
+                      </span>
 
-                      </td>
+                    </td>
 
-                      <td className="p-6">
-                        ${tx.amount}
-                      </td>
+                    <td className="p-6">
+                      {tx.payment_method}
+                    </td>
 
-                      <td className="p-6">
+                    <td className="p-6">
 
-                        <span
+                      <div
+                        className="
+                          flex
+                          flex-wrap
+                          gap-3
+                        "
+                      >
+
+                        <Link
+                          href={`/transaction/${tx.id}`}
+
                           className="
-                            px-4
-                            py-2
-                            rounded-full
-                            bg-slate-800
-                            text-sm
+                            bg-blue-600
+                            hover:bg-blue-700
+                            px-6
+                            py-3
+                            rounded-2xl
                             font-bold
                           "
                         >
-                          {tx.status}
-                        </span>
+                          Open
+                        </Link>
 
-                      </td>
+                        <button
+                          onClick={() =>
+                            forceComplete(tx.id)
+                          }
 
-                      <td className="p-6">
-                        {tx.payment_method}
-                      </td>
+                          className="
+                            bg-green-600
+                            hover:bg-green-700
+                            px-6
+                            py-3
+                            rounded-2xl
+                            font-bold
+                          "
+                        >
+                          Complete
+                        </button>
 
-                      <td className="p-6">
+                        <button
+                          onClick={() =>
+                            forceDispute(tx.id)
+                          }
 
-                        <div className="flex flex-wrap gap-3">
+                          className="
+                            bg-yellow-600
+                            hover:bg-yellow-700
+                            px-6
+                            py-3
+                            rounded-2xl
+                            font-bold
+                          "
+                        >
+                          Dispute
+                        </button>
 
-                          <Link
-                            href={`/transaction/${tx.id}`}
-                          >
+                        <button
+                          onClick={() =>
+                            deleteTransaction(tx.id)
+                          }
 
-                            <button
-                              className="
-                                bg-blue-600
-                                hover:bg-blue-700
-                                px-4
-                                py-2
-                                rounded-xl
-                                font-bold
-                              "
-                            >
-                              Open
-                            </button>
+                          className="
+                            bg-red-600
+                            hover:bg-red-700
+                            px-6
+                            py-3
+                            rounded-2xl
+                            font-bold
+                          "
+                        >
+                          Delete
+                        </button>
 
-                          </Link>
+                      </div>
 
-                          <button
-                            onClick={() =>
-                              completeTransaction(tx.id)
-                            }
+                    </td>
 
-                            className="
-                              bg-green-600
-                              hover:bg-green-700
-                              px-4
-                              py-2
-                              rounded-xl
-                              font-bold
-                            "
-                          >
-                            Complete
-                          </button>
+                  </tr>
 
-                          <button
-                            onClick={() =>
-                              disputeTransaction(tx.id)
-                            }
+                ))}
 
-                            className="
-                              bg-yellow-600
-                              hover:bg-yellow-700
-                              px-4
-                              py-2
-                              rounded-xl
-                              font-bold
-                            "
-                          >
-                            Dispute
-                          </button>
+              </tbody>
 
-                          <button
-                            onClick={() =>
-                              deleteTransaction(tx.id)
-                            }
+            </table>
 
-                            className="
-                              bg-red-600
-                              hover:bg-red-700
-                              px-4
-                              py-2
-                              rounded-xl
-                              font-bold
-                            "
-                          >
-                            Delete
-                          </button>
-
-                        </div>
-
-                      </td>
-
-                    </tr>
-
-                  ))}
-
-                </tbody>
-
-              </table>
-
-            </div>
-
-          )}
+          </div>
 
         </div>
 
       </div>
 
     </main>
+  );
+}
+
+function StatCard({
+  title,
+  value,
+  color,
+}: any) {
+
+  return (
+
+    <div
+      className={`
+        bg-[#07122b]
+        border
+        ${color}
+        rounded-3xl
+        p-6
+      `}
+    >
+
+      <p className="text-slate-400 mb-4">
+        {title}
+      </p>
+
+      <h2
+        className="
+          text-5xl
+          font-black
+        "
+      >
+        {value}
+      </h2>
+
+    </div>
   );
 }
