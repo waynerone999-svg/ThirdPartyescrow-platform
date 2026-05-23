@@ -1,183 +1,82 @@
 "use client";
 
-import { useState } from "react";
-
 import { useRouter } from "next/navigation";
-
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
-const countries = [
-
-  {
-    name: "United States",
-    currency: "USD",
-    methods: [
-      "Wise ⭐ Recommended",
-      "Zelle",
-      "Cash App",
-      "Apple Pay",
-      "Venmo",
-    ],
-  },
-
-  {
-    name: "Kenya",
-    currency: "KES",
-    methods: [
-      "Wise ⭐ Recommended",
-      "M-Pesa",
-      "Airtel Money",
-      "Equity Bank",
-    ],
-  },
-
-  {
-    name: "Uganda",
-    currency: "UGX",
-    methods: [
-      "Wise ⭐ Recommended",
-      "MTN Mobile Money",
-      "Airtel Money Uganda",
-    ],
-  },
-
-  {
-    name: "Tanzania",
-    currency: "TZS",
-    methods: [
-      "Wise ⭐ Recommended",
-      "M-Pesa Tanzania",
-      "Tigo Pesa",
-    ],
-  },
-
-  {
-    name: "United Kingdom",
-    currency: "GBP",
-    methods: [
-      "Wise ⭐ Recommended",
-      "PayPal",
-      "Bank Transfer",
-    ],
-  },
-
-];
 
 export default function HomePage() {
 
   const router = useRouter();
 
-  const [transactionName, setTransactionName] =
-    useState("");
-
-  const [amount, setAmount] =
-    useState("");
-
-  const [buyerEmail, setBuyerEmail] =
-    useState("");
-
-  const [sellerEmail, setSellerEmail] =
-    useState("");
-
-  const [country, setCountry] =
-    useState("");
-
-  const [paymentMethod, setPaymentMethod] =
-    useState("");
-
-  const selectedCountry =
-    countries.find(
-      (c) => c.name === country
-    );
-
-  const escrowFee =
-    Number(amount || 0) * 0.03;
-
-  const buyerPays =
-    Number(amount || 0) + escrowFee;
-
-  const sellerReceives =
-    Number(amount || 0) - escrowFee;
-
-  async function createTransaction() {
-
-    const code =
-      Math.random()
-        .toString(36)
-        .substring(2, 10)
-        .toUpperCase();
-
-    const { data, error } =
-      await supabase
-        .from("transactions")
-        .insert([
-          {
-            transaction_name:
-              transactionName,
-
-            amount,
-
-            buyer_email:
-              buyerEmail,
-
-            seller_email:
-              sellerEmail,
-
-            transaction_code:
-              code,
-
-            payment_method:
-              paymentMethod,
-
-            buyer_country:
-              country,
-
-            escrow_fee:
-              escrowFee,
-
-            buyer_total:
-              buyerPays,
-
-            seller_total:
-              sellerReceives,
-
-            status: "pending",
-          },
-        ])
-        .select()
-        .single();
-
-    if (error) {
-
-      alert(error.message);
-
-      return;
-    }
-
-    router.push(
-      `/transaction/${data.id}`
-    );
-  }
-
   return (
 
-    <main className="min-h-screen bg-slate-950 text-white">
+    <main className="min-h-screen bg-slate-950 text-white overflow-hidden">
 
-      {/* HERO */}
+      {/* NAVBAR */}
 
-      <section className="px-8 py-24 border-b border-white/10">
+      <nav className="border-b border-white/10">
 
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-20 items-center">
+        <div className="max-w-7xl mx-auto px-8 py-6 flex items-center justify-between">
 
           <div>
 
-            <div className="inline-block bg-green-500/20 text-green-400 px-5 py-2 rounded-full text-sm font-bold mb-6">
-              TRUSTED GLOBAL ESCROW PLATFORM
+            <h1 className="text-3xl font-black">
+              3rdParty Escrow
+            </h1>
+
+          </div>
+
+          <div className="flex gap-4">
+
+            <button
+              onClick={() =>
+                router.push("/login")
+              }
+              className="
+                border
+                border-white/20
+                hover:bg-white/10
+                px-6
+                py-3
+                rounded-2xl
+                font-bold
+              "
+            >
+              Login
+            </button>
+
+            <button
+              onClick={() =>
+                router.push("/register")
+              }
+              className="
+                bg-blue-600
+                hover:bg-blue-700
+                px-6
+                py-3
+                rounded-2xl
+                font-bold
+              "
+            >
+              Create Account
+            </button>
+
+          </div>
+
+        </div>
+
+      </nav>
+
+      {/* HERO */}
+
+      <section className="px-8 py-28 border-b border-white/10">
+
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-20 items-center">
+
+          {/* LEFT */}
+
+          <div>
+
+            <div className="inline-block bg-green-500/20 text-green-400 px-5 py-2 rounded-full text-sm font-bold mb-8">
+              GLOBAL ESCROW PROTECTION PLATFORM
             </div>
 
             <h1 className="text-6xl lg:text-7xl font-black leading-tight mb-8">
@@ -189,184 +88,125 @@ export default function HomePage() {
             <p className="text-slate-300 text-xl leading-relaxed mb-10">
 
               3rdParty Escrow protects buyers and sellers worldwide
-              during ticket sales, online trading, digital goods,
-              services, and high-value transactions.
+              during online transactions including FIFA World Cup tickets,
+              digital assets, freelancing, services, gaming, and
+              high-value online trades.
 
             </p>
 
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-4 mb-12">
 
               <div className="bg-slate-900 border border-white/10 px-6 py-4 rounded-2xl">
                 FIFA World Cup Tickets
               </div>
 
               <div className="bg-slate-900 border border-white/10 px-6 py-4 rounded-2xl">
-                Mobile Money
+                Secure Global Payments
               </div>
 
               <div className="bg-slate-900 border border-white/10 px-6 py-4 rounded-2xl">
-                Global Payments
+                Buyer & Seller Protection
               </div>
+
+            </div>
+
+            <div className="flex flex-wrap gap-5">
+
+              <button
+                onClick={() =>
+                  router.push("/register")
+                }
+                className="
+                  bg-blue-600
+                  hover:bg-blue-700
+                  px-10
+                  py-5
+                  rounded-2xl
+                  font-black
+                  text-xl
+                "
+              >
+                Start Using Escrow
+              </button>
+
+              <button
+                onClick={() =>
+                  router.push("/login")
+                }
+                className="
+                  border
+                  border-white/20
+                  hover:bg-white/10
+                  px-10
+                  py-5
+                  rounded-2xl
+                  font-black
+                  text-xl
+                "
+              >
+                Login
+              </button>
 
             </div>
 
           </div>
 
-          <div className="bg-slate-900 border border-white/10 rounded-[40px] p-10">
+          {/* RIGHT SIDE */}
+
+          <div
+            className="
+              bg-slate-900
+              border
+              border-white/10
+              rounded-[40px]
+              p-10
+            "
+          >
 
             <h2 className="text-4xl font-black mb-8">
-              Create Escrow Transaction
+              Why People Trust Escrow
             </h2>
 
-            <div className="space-y-5">
+            <div className="space-y-6">
 
-              <input
-                placeholder="Transaction Name"
-                value={transactionName}
-                onChange={(e) =>
-                  setTransactionName(
-                    e.target.value
-                  )
-                }
-                className="w-full bg-slate-800 border border-white/10 rounded-2xl px-5 py-4"
-              />
+              <div className="bg-slate-800 rounded-3xl p-6">
 
-              <input
-                placeholder="Amount"
-                value={amount}
-                onChange={(e) =>
-                  setAmount(
-                    e.target.value
-                  )
-                }
-                className="w-full bg-slate-800 border border-white/10 rounded-2xl px-5 py-4"
-              />
+                <h3 className="text-2xl font-black mb-3 text-green-400">
+                  Buyer Protection
+                </h3>
 
-              <input
-                placeholder="Buyer Email"
-                value={buyerEmail}
-                onChange={(e) =>
-                  setBuyerEmail(
-                    e.target.value
-                  )
-                }
-                className="w-full bg-slate-800 border border-white/10 rounded-2xl px-5 py-4"
-              />
+                <p className="text-slate-300">
+                  Buyers avoid scams by ensuring sellers
+                  only receive confirmation after secure payment.
+                </p>
 
-              <input
-                placeholder="Seller Email"
-                value={sellerEmail}
-                onChange={(e) =>
-                  setSellerEmail(
-                    e.target.value
-                  )
-                }
-                className="w-full bg-slate-800 border border-white/10 rounded-2xl px-5 py-4"
-              />
+              </div>
 
-              <select
-                value={country}
-                onChange={(e) => {
+              <div className="bg-slate-800 rounded-3xl p-6">
 
-                  setCountry(
-                    e.target.value
-                  );
+                <h3 className="text-2xl font-black mb-3 text-blue-400">
+                  Seller Protection
+                </h3>
 
-                  setPaymentMethod("");
-                }}
-                className="w-full bg-slate-800 border border-white/10 rounded-2xl px-5 py-4"
-              >
+                <p className="text-slate-300">
+                  Sellers confirm buyer commitment before
+                  releasing products, tickets, or services.
+                </p>
 
-                <option value="">
-                  Select Country
-                </option>
+              </div>
 
-                {countries.map((c) => (
+              <div className="bg-slate-800 rounded-3xl p-6">
 
-                  <option
-                    key={c.name}
-                    value={c.name}
-                  >
-                    {c.name}
-                  </option>
-                ))}
+                <h3 className="text-2xl font-black mb-3 text-yellow-400">
+                  Dispute Resolution
+                </h3>
 
-              </select>
+                <p className="text-slate-300">
+                  Admin dispute systems help resolve
+                  conflicts fairly between parties.
+                </p>
 
-              {selectedCountry && (
-
-                <div className="space-y-3">
-
-                  {selectedCountry.methods.map(
-                    (method) => (
-
-                    <button
-                      key={method}
-
-                      onClick={() =>
-                        setPaymentMethod(
-                          method
-                        )
-                      }
-
-                      className={`
-                        w-full
-                        text-left
-                        px-5
-                        py-4
-                        rounded-2xl
-                        border
-                        ${
-                          paymentMethod === method
-                            ? "bg-green-600 border-green-400"
-                            : "bg-slate-800 border-white/10"
-                        }
-                      `}
-                    >
-
-                      {method}
-
-                    </button>
-                  ))}
-
-                </div>
-              )}
-
-              {amount && (
-
-                <div className="bg-slate-800 rounded-3xl p-6 space-y-3">
-
-                  <h3 className="text-2xl font-black text-blue-400">
-                    Escrow Breakdown
-                  </h3>
-
-                  <p>
-                    Escrow Fee:
-                    {" "}
-                    ${escrowFee.toFixed(2)}
-                  </p>
-
-                  <p>
-                    Buyer Pays:
-                    {" "}
-                    ${buyerPays.toFixed(2)}
-                  </p>
-
-                  <p>
-                    Seller Receives:
-                    {" "}
-                    ${sellerReceives.toFixed(2)}
-                  </p>
-
-                </div>
-              )}
-
-              <button
-                onClick={createTransaction}
-                className="w-full bg-blue-600 hover:bg-blue-700 py-5 rounded-2xl font-black text-xl"
-              >
-                Create Secure Transaction
-              </button>
+              </div>
 
             </div>
 
@@ -388,53 +228,76 @@ export default function HomePage() {
 
           <div className="grid md:grid-cols-3 gap-8">
 
-            <div className="bg-slate-900 border border-white/10 rounded-3xl p-8">
+            <div
+              className="
+                bg-slate-900
+                border
+                border-white/10
+                rounded-3xl
+                p-8
+              "
+            >
 
               <div className="text-5xl font-black text-blue-400 mb-6">
                 1
               </div>
 
               <h3 className="text-2xl font-black mb-4">
-                Create Transaction
+                Create Account
               </h3>
 
               <p className="text-slate-300">
-                Buyer and seller agree on terms,
-                amount, and payment method.
+                Register securely and access your escrow dashboard.
               </p>
 
             </div>
 
-            <div className="bg-slate-900 border border-white/10 rounded-3xl p-8">
+            <div
+              className="
+                bg-slate-900
+                border
+                border-white/10
+                rounded-3xl
+                p-8
+              "
+            >
 
               <div className="text-5xl font-black text-green-400 mb-6">
                 2
               </div>
 
               <h3 className="text-2xl font-black mb-4">
-                Payment Secured
+                Create Secure Transaction
               </h3>
 
               <p className="text-slate-300">
-                Buyer confirms payment while escrow
-                secures the transaction process.
+                Buyer and seller agree on terms,
+                payment method, and transaction value.
               </p>
 
             </div>
 
-            <div className="bg-slate-900 border border-white/10 rounded-3xl p-8">
+            <div
+              className="
+                bg-slate-900
+                border
+                border-white/10
+                rounded-3xl
+                p-8
+              "
+            >
 
               <div className="text-5xl font-black text-yellow-400 mb-6">
                 3
               </div>
 
               <h3 className="text-2xl font-black mb-4">
-                Assets Delivered
+                Complete Safely
               </h3>
 
               <p className="text-slate-300">
-                Seller delivers tickets, goods,
-                or services safely.
+                Seller delivers assets while escrow
+                protects both parties during the process.
               </p>
 
             </div>
@@ -445,39 +308,98 @@ export default function HomePage() {
 
       </section>
 
-      {/* TRUST */}
+      {/* FIFA SECTION */}
+
+      <section className="px-8 py-24 border-b border-white/10">
+
+        <div className="max-w-6xl mx-auto">
+
+          <div
+            className="
+              bg-gradient-to-r
+              from-blue-900
+              to-slate-900
+              border
+              border-blue-500
+              rounded-[40px]
+              p-12
+            "
+          >
+
+            <h2 className="text-5xl font-black mb-8">
+              Built For High-Risk Online Transactions
+            </h2>
+
+            <div className="grid md:grid-cols-2 gap-8">
+
+              <div className="bg-slate-950/50 rounded-3xl p-8">
+
+                <h3 className="text-3xl font-black mb-4 text-green-400">
+                  FIFA World Cup Tickets
+                </h3>
+
+                <p className="text-slate-300">
+                  Secure expensive ticket purchases from
+                  strangers without risking scams.
+                </p>
+
+              </div>
+
+              <div className="bg-slate-950/50 rounded-3xl p-8">
+
+                <h3 className="text-3xl font-black mb-4 text-yellow-400">
+                  Digital Services & Assets
+                </h3>
+
+                <p className="text-slate-300">
+                  Safely exchange freelancing services,
+                  gaming accounts, digital products,
+                  and online goods.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      {/* TRUST BADGES */}
 
       <section className="px-8 py-24 border-b border-white/10">
 
         <div className="max-w-6xl mx-auto text-center">
 
           <h2 className="text-5xl font-black mb-10">
-            Trusted Global Escrow Protection
+            Trusted Escrow Features
           </h2>
 
           <p className="text-slate-300 text-xl max-w-4xl mx-auto mb-16">
 
-            3rdParty Escrow helps protect online transactions
-            between buyers and sellers who do not know each other.
+            3rdParty Escrow helps secure online transactions
+            between buyers and sellers worldwide.
 
           </p>
 
           <div className="grid md:grid-cols-4 gap-6">
 
             <div className="bg-slate-900 border border-white/10 rounded-3xl p-8">
-              Secure Payments
+              Secure Escrow Flow
             </div>
 
             <div className="bg-slate-900 border border-white/10 rounded-3xl p-8">
-              Global Coverage
+              Real-Time Transaction Chat
             </div>
 
             <div className="bg-slate-900 border border-white/10 rounded-3xl p-8">
-              Dispute Resolution
+              Admin Dispute Review
             </div>
 
             <div className="bg-slate-900 border border-white/10 rounded-3xl p-8">
-              Real-Time Chat
+              Global Payment Support
             </div>
 
           </div>
@@ -505,8 +427,8 @@ export default function HomePage() {
               </h3>
 
               <p className="text-slate-300">
-                Yes. Transactions are protected through escrow flow,
-                dispute handling, and verified transaction processes.
+                Yes. Transactions are protected through escrow,
+                secure transaction flow, and dispute handling systems.
               </p>
 
             </div>
@@ -514,12 +436,12 @@ export default function HomePage() {
             <div className="bg-slate-900 border border-white/10 rounded-3xl p-8">
 
               <h3 className="text-2xl font-black mb-4">
-                What can I use escrow for?
+                What can escrow be used for?
               </h3>
 
               <p className="text-slate-300">
-                Ticket sales, online services, digital products,
-                gaming assets, freelancing, and more.
+                FIFA tickets, freelancing, digital assets,
+                gaming, online services, and high-value sales.
               </p>
 
             </div>
@@ -531,13 +453,51 @@ export default function HomePage() {
               </h3>
 
               <p className="text-slate-300">
-                Admin dispute review systems help investigate
-                and resolve transaction conflicts fairly.
+                Admin review systems investigate disputes
+                and help determine fair resolutions.
               </p>
 
             </div>
 
           </div>
+
+        </div>
+
+      </section>
+
+      {/* CTA */}
+
+      <section className="px-8 py-24 border-b border-white/10">
+
+        <div className="max-w-5xl mx-auto text-center">
+
+          <h2 className="text-6xl font-black mb-8">
+            Start Using Secure Escrow Today
+          </h2>
+
+          <p className="text-slate-300 text-xl mb-12">
+
+            Join buyers and sellers worldwide using
+            3rdParty Escrow for safer online transactions.
+
+          </p>
+
+          <button
+            onClick={() =>
+              router.push("/register")
+            }
+            className="
+              bg-blue-600
+              hover:bg-blue-700
+              px-12
+              py-6
+              rounded-3xl
+              font-black
+              text-2xl
+            "
+          >
+            Create Free Account
+          </button>
 
         </div>
 
