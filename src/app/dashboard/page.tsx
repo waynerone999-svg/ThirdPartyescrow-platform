@@ -145,7 +145,7 @@ export default function DashboardPage() {
         {/* ACTION BUTTONS */}
         <div className="flex flex-wrap gap-5 mb-14">
 
-          <Link href="/new-transaction">
+          <Link href="/create">
 
             <button
               className="
