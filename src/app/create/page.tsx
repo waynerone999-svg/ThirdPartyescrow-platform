@@ -15,12 +15,10 @@ const countries = [
     name: "United States",
     currency: "USD",
     methods: [
-      "Wise ⭐ Recommended",
+      "Wise ⭐ RECOMMENDED",
+      "USDT Crypto",
       "Zelle",
-      "Cash App",
       "Apple Pay",
-      "Venmo",
-      "PayPal",
       "Bank Transfer",
     ],
   },
@@ -29,9 +27,9 @@ const countries = [
     name: "Canada",
     currency: "CAD",
     methods: [
-      "Wise ⭐ Recommended",
+      "Wise ⭐ RECOMMENDED",
+      "USDT Crypto",
       "Interac",
-      "PayPal",
       "Bank Transfer",
     ],
   },
@@ -40,9 +38,9 @@ const countries = [
     name: "Mexico",
     currency: "MXN",
     methods: [
-      "Wise ⭐ Recommended",
+      "Wise ⭐ RECOMMENDED",
+      "USDT Crypto",
       "OXXO",
-      "BBVA Transfer",
       "Bank Transfer",
     ],
   },
@@ -51,7 +49,8 @@ const countries = [
     name: "Brazil",
     currency: "BRL",
     methods: [
-      "Wise ⭐ Recommended",
+      "Wise ⭐ RECOMMENDED",
+      "USDT Crypto",
       "PIX",
       "Bank Transfer",
     ],
@@ -61,17 +60,19 @@ const countries = [
     name: "Argentina",
     currency: "ARS",
     methods: [
-      "Wise ⭐ Recommended",
+      "Wise ⭐ RECOMMENDED",
+      "USDT Crypto",
       "Mercado Pago",
       "Bank Transfer",
     ],
   },
 
   {
-    name: "United Kingdom",
+    name: "England",
     currency: "GBP",
     methods: [
-      "Wise ⭐ Recommended",
+      "Wise ⭐ RECOMMENDED",
+      "USDT Crypto",
       "PayPal",
       "Revolut",
       "Bank Transfer",
@@ -82,7 +83,8 @@ const countries = [
     name: "France",
     currency: "EUR",
     methods: [
-      "Wise ⭐ Recommended",
+      "Wise ⭐ RECOMMENDED",
+      "USDT Crypto",
       "SEPA Transfer",
       "PayPal",
     ],
@@ -92,7 +94,8 @@ const countries = [
     name: "Germany",
     currency: "EUR",
     methods: [
-      "Wise ⭐ Recommended",
+      "Wise ⭐ RECOMMENDED",
+      "USDT Crypto",
       "SEPA Transfer",
       "Revolut",
     ],
@@ -102,7 +105,8 @@ const countries = [
     name: "Spain",
     currency: "EUR",
     methods: [
-      "Wise ⭐ Recommended",
+      "Wise ⭐ RECOMMENDED",
+      "USDT Crypto",
       "Bizum",
       "SEPA Transfer",
     ],
@@ -112,7 +116,8 @@ const countries = [
     name: "Portugal",
     currency: "EUR",
     methods: [
-      "Wise ⭐ Recommended",
+      "Wise ⭐ RECOMMENDED",
+      "USDT Crypto",
       "MB WAY",
       "SEPA Transfer",
     ],
@@ -122,7 +127,8 @@ const countries = [
     name: "Netherlands",
     currency: "EUR",
     methods: [
-      "Wise ⭐ Recommended",
+      "Wise ⭐ RECOMMENDED",
+      "USDT Crypto",
       "iDEAL",
       "SEPA Transfer",
     ],
@@ -132,7 +138,8 @@ const countries = [
     name: "Belgium",
     currency: "EUR",
     methods: [
-      "Wise ⭐ Recommended",
+      "Wise ⭐ RECOMMENDED",
+      "USDT Crypto",
       "Bancontact",
       "SEPA Transfer",
     ],
@@ -142,7 +149,8 @@ const countries = [
     name: "Italy",
     currency: "EUR",
     methods: [
-      "Wise ⭐ Recommended",
+      "Wise ⭐ RECOMMENDED",
+      "USDT Crypto",
       "PostePay",
       "SEPA Transfer",
     ],
@@ -152,7 +160,8 @@ const countries = [
     name: "Morocco",
     currency: "MAD",
     methods: [
-      "Wise ⭐ Recommended",
+      "Wise ⭐ RECOMMENDED",
+      "USDT Crypto",
       "Cash Plus",
       "Bank Transfer",
     ],
@@ -162,10 +171,10 @@ const countries = [
     name: "Nigeria",
     currency: "NGN",
     methods: [
-      "Wise ⭐ Recommended",
+      "Wise ⭐ RECOMMENDED",
+      "USDT Crypto",
       "Opay",
       "PalmPay",
-      "Kuda",
       "Bank Transfer",
     ],
   },
@@ -174,11 +183,12 @@ const countries = [
     name: "Kenya",
     currency: "KES",
     methods: [
-      "Wise ⭐ Recommended",
+      "Wise ⭐ RECOMMENDED",
+      "USDT Crypto",
       "M-Pesa",
       "Airtel Money",
-      "KCB Bank",
       "Equity Bank",
+      "KCB Bank",
     ],
   },
 
@@ -186,11 +196,11 @@ const countries = [
     name: "Uganda",
     currency: "UGX",
     methods: [
-      "Wise ⭐ Recommended",
+      "Wise ⭐ RECOMMENDED",
+      "USDT Crypto",
       "MTN Mobile Money",
       "Airtel Money Uganda",
       "Stanbic Bank",
-      "Centenary Bank",
     ],
   },
 
@@ -198,7 +208,8 @@ const countries = [
     name: "Tanzania",
     currency: "TZS",
     methods: [
-      "Wise ⭐ Recommended",
+      "Wise ⭐ RECOMMENDED",
+      "USDT Crypto",
       "M-Pesa Tanzania",
       "Tigo Pesa",
       "Airtel Money",
@@ -210,30 +221,10 @@ const countries = [
     name: "South Africa",
     currency: "ZAR",
     methods: [
-      "Wise ⭐ Recommended",
+      "Wise ⭐ RECOMMENDED",
+      "USDT Crypto",
       "Capitec",
       "FNB",
-      "Bank Transfer",
-    ],
-  },
-
-  {
-    name: "Ghana",
-    currency: "GHS",
-    methods: [
-      "Wise ⭐ Recommended",
-      "MTN MoMo",
-      "Vodafone Cash",
-      "Bank Transfer",
-    ],
-  },
-
-  {
-    name: "Egypt",
-    currency: "EGP",
-    methods: [
-      "Wise ⭐ Recommended",
-      "Vodafone Cash",
       "Bank Transfer",
     ],
   },
@@ -242,7 +233,8 @@ const countries = [
     name: "Saudi Arabia",
     currency: "SAR",
     methods: [
-      "Wise ⭐ Recommended",
+      "Wise ⭐ RECOMMENDED",
+      "USDT Crypto",
       "STC Pay",
       "Bank Transfer",
     ],
@@ -252,18 +244,9 @@ const countries = [
     name: "Qatar",
     currency: "QAR",
     methods: [
-      "Wise ⭐ Recommended",
+      "Wise ⭐ RECOMMENDED",
+      "USDT Crypto",
       "QNB",
-      "Bank Transfer",
-    ],
-  },
-
-  {
-    name: "UAE",
-    currency: "AED",
-    methods: [
-      "Wise ⭐ Recommended",
-      "Careem Pay",
       "Bank Transfer",
     ],
   },
@@ -272,7 +255,8 @@ const countries = [
     name: "India",
     currency: "INR",
     methods: [
-      "Wise ⭐ Recommended",
+      "Wise ⭐ RECOMMENDED",
+      "USDT Crypto",
       "UPI",
       "Paytm",
       "PhonePe",
@@ -284,38 +268,9 @@ const countries = [
     name: "Japan",
     currency: "JPY",
     methods: [
-      "Wise ⭐ Recommended",
+      "Wise ⭐ RECOMMENDED",
+      "USDT Crypto",
       "PayPay",
-      "Bank Transfer",
-    ],
-  },
-
-  {
-    name: "South Korea",
-    currency: "KRW",
-    methods: [
-      "Wise ⭐ Recommended",
-      "Kakao Pay",
-      "Bank Transfer",
-    ],
-  },
-
-  {
-    name: "Australia",
-    currency: "AUD",
-    methods: [
-      "Wise ⭐ Recommended",
-      "PayID",
-      "Bank Transfer",
-    ],
-  },
-
-  {
-    name: "New Zealand",
-    currency: "NZD",
-    methods: [
-      "Wise ⭐ Recommended",
-      "POLi",
       "Bank Transfer",
     ],
   },
@@ -369,7 +324,7 @@ export default function CreateTransactionPage() {
     if (!paymentMethod) {
 
       alert(
-        "Please select payment method"
+        "Select payment method"
       );
 
       return;
@@ -431,8 +386,6 @@ export default function CreateTransactionPage() {
 
         alert(error.message);
 
-        setLoading(false);
-
         return;
       }
 
@@ -454,7 +407,7 @@ export default function CreateTransactionPage() {
 
     <main className="min-h-screen bg-slate-950 text-white p-8">
 
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-5xl mx-auto">
 
         <div className="mb-12">
 
@@ -463,12 +416,12 @@ export default function CreateTransactionPage() {
           </h1>
 
           <p className="text-slate-400 text-xl">
-            Secure payments between buyers and sellers worldwide.
+            Buyer selects country → payment methods appear automatically.
           </p>
 
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-8">
 
           <div className="grid md:grid-cols-2 gap-6">
 
@@ -564,13 +517,13 @@ export default function CreateTransactionPage() {
 
             <div className="bg-slate-900 border border-green-500 rounded-3xl p-8">
 
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex justify-between items-center mb-8">
 
-                <h2 className="text-3xl font-black text-green-400">
+                <h2 className="text-4xl font-black text-green-400">
                   Payment Methods
                 </h2>
 
-                <div className="text-slate-400">
+                <div className="text-slate-400 text-lg">
                   Currency:
                   {" "}
                   {selectedCountry.currency}
@@ -578,7 +531,7 @@ export default function CreateTransactionPage() {
 
               </div>
 
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-2 gap-5">
 
                 {selectedCountry.methods.map(
                   (method) => (
@@ -594,8 +547,8 @@ export default function CreateTransactionPage() {
                     className={`
                       text-left
                       px-6
-                      py-5
-                      rounded-2xl
+                      py-6
+                      rounded-3xl
                       border
                       transition-all
                       ${
@@ -607,7 +560,7 @@ export default function CreateTransactionPage() {
                     `}
                   >
 
-                    <div className="font-black text-lg">
+                    <div className="font-black text-xl">
                       {method}
                     </div>
 
