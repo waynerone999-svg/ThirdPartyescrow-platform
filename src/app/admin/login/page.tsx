@@ -35,13 +35,18 @@ export default function AdminLoginPage() {
           .from("admins")
           .select("*");
 
-      console.log(data);
+      console.log("ADMINS:", data);
+
+      console.log("ERROR:", error);
+
+      alert(
+        JSON.stringify({
+          data,
+          error,
+        })
+      );
 
       if (error) {
-
-        console.log(error);
-
-        alert(error.message);
 
         setLoading(false);
 
@@ -75,7 +80,7 @@ export default function AdminLoginPage() {
 
       console.log(err);
 
-      alert("Login failed");
+      alert("Crash happened");
     }
   }
 
