@@ -163,3 +163,7 @@ export default function AdminPage() {
     </main>
   );
 }
+if (user.email !== "waynerone999@gmail.com") {
+  router.push("/dashboard");
+  return;
+}
