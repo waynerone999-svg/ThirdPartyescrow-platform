@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
 import { useParams } from "next/navigation";
+
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
@@ -31,7 +33,12 @@ export default function TransactionPage() {
   const [role, setRole] =
     useState("");
 
-  /* ADMIN EMAIL */
+  const [sellerPayoutMethod, setSellerPayoutMethod] =
+    useState("");
+
+  const [sellerPayoutDetails, setSellerPayoutDetails] =
+    useState("");
+
   const adminEmail =
     "waynerone999@gmail.com";
 
@@ -46,76 +53,64 @@ export default function TransactionPage() {
 
   async function loadTransaction() {
 
-    try {
+    const { data, error } =
+      await supabase
+        .from("transactions")
+        .select("*")
+        .eq("id", transactionId)
+        .single();
 
-      const { data, error } =
-        await supabase
-          .from("transactions")
-          .select("*")
-          .eq("id", transactionId)
-          .single();
+    if (error || !data) {
 
-      if (error || !data) {
+      setTransaction("not-found");
 
-        console.log(error);
+      return;
+    }
 
-        setTransaction("not-found");
+    const currentEmail =
+      user?.email?.toLowerCase();
 
-        return;
-      }
+    const buyerEmail =
+      data.buyer_email?.toLowerCase();
 
-      const currentEmail =
-        user?.email?.toLowerCase();
+    const sellerEmail =
+      data.seller_email?.toLowerCase();
 
-      const buyerEmail =
-        data.buyer_email?.toLowerCase();
+    if (
+      currentEmail !== buyerEmail &&
+      currentEmail !== sellerEmail &&
+      currentEmail !== adminEmail
+    ) {
 
-      const sellerEmail =
-        data.seller_email?.toLowerCase();
+      setTransaction("unauthorized");
 
-      /* ACCESS SECURITY */
-      if (
-        currentEmail !== buyerEmail &&
-        currentEmail !== sellerEmail &&
-        currentEmail !== adminEmail
-      ) {
+      return;
+    }
 
-        setTransaction("unauthorized");
+    setTransaction(data);
 
-        return;
-      }
+    if (
+      currentEmail === buyerEmail
+    ) {
+      setRole("buyer");
+    }
 
-      setTransaction(data);
+    if (
+      currentEmail === sellerEmail
+    ) {
+      setRole("seller");
+    }
 
-      if (
-        currentEmail === buyerEmail
-      ) {
-        setRole("buyer");
-      }
-
-      if (
-        currentEmail === sellerEmail
-      ) {
-        setRole("seller");
-      }
-
-      if (
-        currentEmail === adminEmail
-      ) {
-        setRole("admin");
-      }
-
-    } catch (err) {
-
-      console.log(err);
-
-      setTransaction("error");
+    if (
+      currentEmail === adminEmail
+    ) {
+      setRole("admin");
     }
   }
 
   async function loadMessages() {
 
-    const { data, error } =
+    const { data } =
       await supabase
         .from("messages")
         .select("*")
@@ -127,13 +122,6 @@ export default function TransactionPage() {
           ascending: true,
         });
 
-    if (error) {
-
-      console.log(error);
-
-      return;
-    }
-
     setMessages(data || []);
   }
 
@@ -141,33 +129,51 @@ export default function TransactionPage() {
 
     if (!message.trim()) return;
 
-    const { error } =
-      await supabase
-        .from("messages")
-        .insert([
-          {
-            transaction_id:
-              transactionId,
+    await supabase
+      .from("messages")
+      .insert([
+        {
+          transaction_id:
+            transactionId,
 
-            sender:
-              user?.email,
+          sender:
+            user?.email,
 
-            message,
-          },
-        ]);
+          message,
+        },
+      ]);
 
-    if (error) {
+    setMessage("");
+  }
 
-      console.log(error);
+  async function sellerAccept() {
 
-      alert(error.message);
+    if (
+      !sellerPayoutMethod ||
+      !sellerPayoutDetails
+    ) {
+
+      alert(
+        "Enter payout method and payout details"
+      );
 
       return;
     }
 
-    setMessage("");
+    await supabase
+      .from("transactions")
+      .update({
 
-    loadMessages();
+        status: "accepted",
+
+        seller_payout_method:
+          sellerPayoutMethod,
+
+        seller_payout_details:
+          sellerPayoutDetails,
+
+      })
+      .eq("id", transactionId);
   }
 
   async function buyerPaid() {
@@ -178,8 +184,6 @@ export default function TransactionPage() {
         status: "paid",
       })
       .eq("id", transactionId);
-
-    loadTransaction();
   }
 
   async function sellerReleased() {
@@ -190,8 +194,6 @@ export default function TransactionPage() {
         status: "released",
       })
       .eq("id", transactionId);
-
-    loadTransaction();
   }
 
   async function buyerConfirmed() {
@@ -202,8 +204,6 @@ export default function TransactionPage() {
         status: "completed",
       })
       .eq("id", transactionId);
-
-    loadTransaction();
   }
 
   async function fileComplaint() {
@@ -214,11 +214,8 @@ export default function TransactionPage() {
         status: "disputed",
       })
       .eq("id", transactionId);
-
-    loadTransaction();
   }
 
-  /* ADMIN FORCE COMPLETE */
   async function adminComplete() {
 
     await supabase
@@ -227,11 +224,8 @@ export default function TransactionPage() {
         status: "completed",
       })
       .eq("id", transactionId);
-
-    loadTransaction();
   }
 
-  /* ADMIN FORCE DISPUTE */
   async function adminDispute() {
 
     await supabase
@@ -240,8 +234,6 @@ export default function TransactionPage() {
         status: "disputed",
       })
       .eq("id", transactionId);
-
-    loadTransaction();
   }
 
   useEffect(() => {
@@ -258,7 +250,9 @@ export default function TransactionPage() {
 
     loadMessages();
 
-    const channel = supabase
+    /* REALTIME MESSAGES */
+
+    const messageChannel = supabase
 
       .channel(
         `messages-${transactionId}`
@@ -277,6 +271,31 @@ export default function TransactionPage() {
 
           loadMessages();
 
+        }
+      )
+
+      .subscribe();
+
+    /* REALTIME TRANSACTION STATUS */
+
+    const transactionChannel = supabase
+
+      .channel(
+        `transaction-${transactionId}`
+      )
+
+      .on(
+        "postgres_changes",
+
+        {
+          event: "*",
+          schema: "public",
+          table: "transactions",
+          filter: `id=eq.${transactionId}`,
+        },
+
+        () => {
+
           loadTransaction();
 
         }
@@ -287,56 +306,23 @@ export default function TransactionPage() {
     return () => {
 
       supabase.removeChannel(
-        channel
+        messageChannel
       );
 
+      supabase.removeChannel(
+        transactionChannel
+      );
     };
 
   }, [user]);
 
-  if (transaction === null) {
+  if (!transaction || transaction === null) {
 
     return (
 
       <main className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
 
-        Loading Transaction...
-
-      </main>
-    );
-  }
-
-  if (transaction === "not-found") {
-
-    return (
-
-      <main className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
-
-        Transaction not found.
-
-      </main>
-    );
-  }
-
-  if (transaction === "unauthorized") {
-
-    return (
-
-      <main className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
-
-        You are not part of this transaction.
-
-      </main>
-    );
-  }
-
-  if (transaction === "error") {
-
-    return (
-
-      <main className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
-
-        Failed to load transaction.
+        Loading...
 
       </main>
     );
@@ -344,18 +330,17 @@ export default function TransactionPage() {
 
   return (
 
-    <main className="min-h-screen bg-slate-950 text-white p-8">
+    <main className="min-h-screen bg-slate-950 text-white p-4 md:p-8">
 
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-6xl mx-auto">
 
-        {/* HEADER */}
-        <div className="mb-8">
+        <div className="mb-10">
 
-          <h1 className="text-5xl font-black mb-4">
+          <h1 className="text-4xl md:text-5xl font-black mb-5">
             {transaction.transaction_name}
           </h1>
 
-          <div className="space-y-2 text-slate-300">
+          <div className="space-y-3 text-slate-300">
 
             <p>
               Amount:
@@ -372,11 +357,9 @@ export default function TransactionPage() {
             <p>
               Payment Method:
               {" "}
-
-              <span className="font-bold text-green-400">
+              <span className="text-green-400 font-bold">
                 {transaction.payment_method}
               </span>
-
             </p>
 
             <p>
@@ -386,87 +369,83 @@ export default function TransactionPage() {
             </p>
 
             <p>
+              Buyer Country:
+              {" "}
+              {transaction.buyer_country}
+            </p>
+
+            <p>
+              Escrow Fee:
+              {" "}
+              ${transaction.escrow_fee}
+            </p>
+
+            <p>
+              Buyer Pays:
+              {" "}
+              ${transaction.buyer_total}
+            </p>
+
+            <p>
+              Seller Receives:
+              {" "}
+              ${transaction.seller_receives}
+            </p>
+
+            <p>
               You are:
               {" "}
-
               <span className="capitalize font-bold">
                 {role}
               </span>
-
             </p>
 
           </div>
 
-          {/* ADMIN ACCESS */}
-          {role === "admin" && (
-
-            <div
-              className="
-                mt-6
-                bg-purple-900/30
-                border
-                border-purple-500
-                rounded-3xl
-                p-5
-              "
-            >
-
-              <h2 className="text-2xl font-black text-purple-400 mb-2">
-                ADMIN ACCESS
-              </h2>
-
-              <p className="text-slate-300">
-                You are viewing this transaction as escrow administrator.
-              </p>
-
-            </div>
-          )}
-
         </div>
 
-        {/* COMPLETED */}
-        {transaction.status === "completed" && (
+        {transaction.seller_payout_method && (
 
           <div
             className="
-              mb-8
-              bg-blue-900/30
+              bg-slate-900
               border
-              border-blue-500
+              border-blue-500/30
               rounded-3xl
-              p-6
+              p-8
+              mb-8
             "
           >
 
-            <h2 className="text-3xl font-black text-blue-400 mb-2">
-              TRANSACTION COMPLETED
+            <h2 className="text-3xl font-black mb-5">
+              Seller Payout Info
             </h2>
 
-          </div>
-        )}
+            <p className="mb-3">
 
-        {/* DISPUTED */}
-        {transaction.status === "disputed" && (
+              <strong>Method:</strong>
 
-          <div
-            className="
-              mb-8
-              bg-red-900/30
-              border
-              border-red-500
-              rounded-3xl
-              p-6
-            "
-          >
+              {" "}
 
-            <h2 className="text-3xl font-black text-red-400 mb-2">
-              TRANSACTION DISPUTED
-            </h2>
+              {transaction.seller_payout_method}
+
+            </p>
+
+            <p>
+
+              <strong>Details:</strong>
+
+              {" "}
+
+              {transaction.seller_payout_details}
+
+            </p>
 
           </div>
         )}
 
         {/* CHAT */}
+
         <div
           className="
             bg-slate-900
@@ -474,7 +453,7 @@ export default function TransactionPage() {
             border-white/10
             rounded-3xl
             p-6
-            h-[500px]
+            h-[450px]
             overflow-y-auto
             mb-6
           "
@@ -501,7 +480,7 @@ export default function TransactionPage() {
 
                   <div
                     className={`
-                      max-w-[70%]
+                      max-w-[80%]
                       px-5
                       py-4
                       rounded-3xl
@@ -514,12 +493,7 @@ export default function TransactionPage() {
                   >
 
                     <p className="text-sm text-white/70 mb-2">
-
-                      {msg.sender ===
-                        transaction.buyer_email
-                          ? "Buyer"
-                          : "Seller/Admin"}
-
+                      {msg.sender}
                     </p>
 
                     <p>
@@ -536,8 +510,9 @@ export default function TransactionPage() {
 
         </div>
 
-        {/* SEND MESSAGE */}
-        <div className="flex gap-4 mb-8">
+        {/* MESSAGE INPUT */}
+
+        <div className="flex flex-col md:flex-row gap-4 mb-10">
 
           <input
             value={message}
@@ -566,6 +541,7 @@ export default function TransactionPage() {
               bg-blue-600
               hover:bg-blue-700
               px-8
+              py-4
               rounded-2xl
               font-bold
             "
@@ -576,10 +552,119 @@ export default function TransactionPage() {
         </div>
 
         {/* ACTIONS */}
-        <div className="flex flex-wrap gap-4">
+
+        <div className="flex flex-wrap gap-5">
+
+          {role === "seller" &&
+            transaction.status === "pending" && (
+
+            <div
+              className="
+                bg-slate-900
+                border
+                border-green-500/30
+                rounded-3xl
+                p-8
+                w-full
+                max-w-2xl
+              "
+            >
+
+              <h2 className="text-3xl font-black mb-6">
+                Accept Transaction
+              </h2>
+
+              <select
+                value={sellerPayoutMethod}
+
+                onChange={(e) =>
+                  setSellerPayoutMethod(
+                    e.target.value
+                  )
+                }
+
+                className="
+                  w-full
+                  bg-slate-800
+                  border
+                  border-white/10
+                  rounded-2xl
+                  px-5
+                  py-4
+                  mb-5
+                "
+              >
+
+                <option value="">
+                  Select payout method
+                </option>
+
+                <option>
+                  Wise
+                </option>
+
+                <option>
+                  USDT Crypto
+                </option>
+
+                <option>
+                  Bank Transfer
+                </option>
+
+                <option>
+                  PayPal
+                </option>
+
+                <option>
+                  M-Pesa
+                </option>
+
+              </select>
+
+              <textarea
+                placeholder="Enter payout details"
+
+                value={sellerPayoutDetails}
+
+                onChange={(e) =>
+                  setSellerPayoutDetails(
+                    e.target.value
+                  )
+                }
+
+                className="
+                  w-full
+                  bg-slate-800
+                  border
+                  border-white/10
+                  rounded-2xl
+                  px-5
+                  py-5
+                  min-h-[140px]
+                  mb-6
+                "
+              />
+
+              <button
+                onClick={sellerAccept}
+
+                className="
+                  bg-green-600
+                  hover:bg-green-700
+                  px-8
+                  py-4
+                  rounded-2xl
+                  font-bold
+                "
+              >
+                Accept Transaction
+              </button>
+
+            </div>
+          )}
 
           {role === "buyer" &&
-            transaction.status === "pending" && (
+            transaction.status === "accepted" && (
 
             <button
               onClick={buyerPaid}
@@ -600,40 +685,21 @@ export default function TransactionPage() {
           {role === "seller" &&
             transaction.status === "paid" && (
 
-            <div
+            <button
+              onClick={sellerReleased}
+
               className="
-                bg-green-900/30
-                border
-                border-green-500
-                rounded-3xl
-                p-6
-                space-y-5
-                w-full
-                max-w-xl
+                bg-yellow-500
+                hover:bg-yellow-600
+                text-black
+                px-8
+                py-4
+                rounded-2xl
+                font-black
               "
             >
-
-              <h2 className="text-2xl font-black text-green-400">
-                ASSETS PAID AND SECURED BY ESCROW
-              </h2>
-
-              <button
-                onClick={sellerReleased}
-
-                className="
-                  bg-yellow-500
-                  hover:bg-yellow-600
-                  text-black
-                  px-8
-                  py-4
-                  rounded-2xl
-                  font-black
-                "
-              >
-                Release Assets
-              </button>
-
-            </div>
+              Release Assets
+            </button>
           )}
 
           {role === "buyer" &&
@@ -653,7 +719,7 @@ export default function TransactionPage() {
                   font-bold
                 "
               >
-                YES, CONFIRM RECEIVED
+                Confirm Received
               </button>
 
               <button
@@ -668,17 +734,15 @@ export default function TransactionPage() {
                   font-bold
                 "
               >
-                NO, FILE DISPUTE
+                File Dispute
               </button>
 
             </>
-
           )}
 
-          {/* ADMIN CONTROLS */}
           {role === "admin" && (
 
-            <div className="flex gap-4 mt-4">
+            <div className="flex flex-wrap gap-4">
 
               <button
                 onClick={adminComplete}
@@ -692,7 +756,7 @@ export default function TransactionPage() {
                   font-bold
                 "
               >
-                FORCE COMPLETE
+                Force Complete
               </button>
 
               <button
@@ -707,7 +771,7 @@ export default function TransactionPage() {
                   font-bold
                 "
               >
-                FORCE DISPUTE
+                Force Dispute
               </button>
 
             </div>
