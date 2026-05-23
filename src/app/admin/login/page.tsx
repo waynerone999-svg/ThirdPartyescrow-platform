@@ -35,18 +35,11 @@ export default function AdminLoginPage() {
           .from("admins")
           .select("*");
 
-      console.log("ADMINS:", data);
-
-      console.log("ERROR:", error);
-
-      alert(
-        JSON.stringify({
-          data,
-          error,
-        })
-      );
-
       if (error) {
+
+        alert(
+          "Failed to load admins"
+        );
 
         setLoading(false);
 
@@ -62,7 +55,9 @@ export default function AdminLoginPage() {
 
       if (!admin) {
 
-        alert("Admin not found");
+        alert(
+          "Invalid admin credentials"
+        );
 
         setLoading(false);
 
@@ -80,17 +75,44 @@ export default function AdminLoginPage() {
 
       console.log(err);
 
-      alert("Crash happened");
+      alert("Login failed");
     }
   }
 
   return (
 
-    <main className="min-h-screen bg-slate-950 text-white flex items-center justify-center p-6">
+    <main
+      className="
+        min-h-screen
+        bg-slate-950
+        text-white
+        flex
+        items-center
+        justify-center
+        p-6
+      "
+    >
 
-      <div className="w-full max-w-md bg-slate-900 border border-white/10 rounded-[40px] p-10">
+      <div
+        className="
+          w-full
+          max-w-md
+          bg-slate-900
+          border
+          border-white/10
+          rounded-[40px]
+          p-10
+        "
+      >
 
-        <h1 className="text-5xl font-black mb-10 text-center">
+        <h1
+          className="
+            text-5xl
+            font-black
+            mb-10
+            text-center
+          "
+        >
           Admin Login
         </h1>
 
@@ -98,28 +120,65 @@ export default function AdminLoginPage() {
 
           <input
             type="email"
+
             placeholder="Admin Email"
+
             value={email}
+
             onChange={(e) =>
-              setEmail(e.target.value)
+              setEmail(
+                e.target.value
+              )
             }
-            className="w-full bg-slate-800 border border-white/10 rounded-2xl px-5 py-4"
+
+            className="
+              w-full
+              bg-slate-800
+              border
+              border-white/10
+              rounded-2xl
+              px-5
+              py-4
+            "
           />
 
           <input
             type="password"
+
             placeholder="Password"
+
             value={password}
+
             onChange={(e) =>
-              setPassword(e.target.value)
+              setPassword(
+                e.target.value
+              )
             }
-            className="w-full bg-slate-800 border border-white/10 rounded-2xl px-5 py-4"
+
+            className="
+              w-full
+              bg-slate-800
+              border
+              border-white/10
+              rounded-2xl
+              px-5
+              py-4
+            "
           />
 
           <button
             onClick={loginAdmin}
+
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 rounded-2xl py-4 font-black"
+
+            className="
+              w-full
+              bg-blue-600
+              hover:bg-blue-700
+              rounded-2xl
+              py-4
+              font-black
+            "
           >
 
             {loading
