@@ -20,6 +20,152 @@ const countries = [
       "Cash App",
       "Apple Pay",
       "Venmo",
+      "PayPal",
+      "Bank Transfer",
+    ],
+  },
+
+  {
+    name: "Canada",
+    currency: "CAD",
+    methods: [
+      "Wise ⭐ Recommended",
+      "Interac",
+      "PayPal",
+      "Bank Transfer",
+    ],
+  },
+
+  {
+    name: "Mexico",
+    currency: "MXN",
+    methods: [
+      "Wise ⭐ Recommended",
+      "OXXO",
+      "BBVA Transfer",
+      "Bank Transfer",
+    ],
+  },
+
+  {
+    name: "Brazil",
+    currency: "BRL",
+    methods: [
+      "Wise ⭐ Recommended",
+      "PIX",
+      "Bank Transfer",
+    ],
+  },
+
+  {
+    name: "Argentina",
+    currency: "ARS",
+    methods: [
+      "Wise ⭐ Recommended",
+      "Mercado Pago",
+      "Bank Transfer",
+    ],
+  },
+
+  {
+    name: "United Kingdom",
+    currency: "GBP",
+    methods: [
+      "Wise ⭐ Recommended",
+      "PayPal",
+      "Revolut",
+      "Bank Transfer",
+    ],
+  },
+
+  {
+    name: "France",
+    currency: "EUR",
+    methods: [
+      "Wise ⭐ Recommended",
+      "SEPA Transfer",
+      "PayPal",
+    ],
+  },
+
+  {
+    name: "Germany",
+    currency: "EUR",
+    methods: [
+      "Wise ⭐ Recommended",
+      "SEPA Transfer",
+      "Revolut",
+    ],
+  },
+
+  {
+    name: "Spain",
+    currency: "EUR",
+    methods: [
+      "Wise ⭐ Recommended",
+      "Bizum",
+      "SEPA Transfer",
+    ],
+  },
+
+  {
+    name: "Portugal",
+    currency: "EUR",
+    methods: [
+      "Wise ⭐ Recommended",
+      "MB WAY",
+      "SEPA Transfer",
+    ],
+  },
+
+  {
+    name: "Netherlands",
+    currency: "EUR",
+    methods: [
+      "Wise ⭐ Recommended",
+      "iDEAL",
+      "SEPA Transfer",
+    ],
+  },
+
+  {
+    name: "Belgium",
+    currency: "EUR",
+    methods: [
+      "Wise ⭐ Recommended",
+      "Bancontact",
+      "SEPA Transfer",
+    ],
+  },
+
+  {
+    name: "Italy",
+    currency: "EUR",
+    methods: [
+      "Wise ⭐ Recommended",
+      "PostePay",
+      "SEPA Transfer",
+    ],
+  },
+
+  {
+    name: "Morocco",
+    currency: "MAD",
+    methods: [
+      "Wise ⭐ Recommended",
+      "Cash Plus",
+      "Bank Transfer",
+    ],
+  },
+
+  {
+    name: "Nigeria",
+    currency: "NGN",
+    methods: [
+      "Wise ⭐ Recommended",
+      "Opay",
+      "PalmPay",
+      "Kuda",
       "Bank Transfer",
     ],
   },
@@ -44,6 +190,7 @@ const countries = [
       "MTN Mobile Money",
       "Airtel Money Uganda",
       "Stanbic Bank",
+      "Centenary Bank",
     ],
   },
 
@@ -60,33 +207,63 @@ const countries = [
   },
 
   {
-    name: "Nigeria",
-    currency: "NGN",
+    name: "South Africa",
+    currency: "ZAR",
     methods: [
       "Wise ⭐ Recommended",
-      "Opay",
-      "PalmPay",
+      "Capitec",
+      "FNB",
       "Bank Transfer",
     ],
   },
 
   {
-    name: "United Kingdom",
-    currency: "GBP",
+    name: "Ghana",
+    currency: "GHS",
     methods: [
       "Wise ⭐ Recommended",
-      "PayPal",
-      "Revolut",
+      "MTN MoMo",
+      "Vodafone Cash",
       "Bank Transfer",
     ],
   },
 
   {
-    name: "Canada",
-    currency: "CAD",
+    name: "Egypt",
+    currency: "EGP",
     methods: [
       "Wise ⭐ Recommended",
-      "Interac",
+      "Vodafone Cash",
+      "Bank Transfer",
+    ],
+  },
+
+  {
+    name: "Saudi Arabia",
+    currency: "SAR",
+    methods: [
+      "Wise ⭐ Recommended",
+      "STC Pay",
+      "Bank Transfer",
+    ],
+  },
+
+  {
+    name: "Qatar",
+    currency: "QAR",
+    methods: [
+      "Wise ⭐ Recommended",
+      "QNB",
+      "Bank Transfer",
+    ],
+  },
+
+  {
+    name: "UAE",
+    currency: "AED",
+    methods: [
+      "Wise ⭐ Recommended",
+      "Careem Pay",
       "Bank Transfer",
     ],
   },
@@ -98,6 +275,47 @@ const countries = [
       "Wise ⭐ Recommended",
       "UPI",
       "Paytm",
+      "PhonePe",
+      "Bank Transfer",
+    ],
+  },
+
+  {
+    name: "Japan",
+    currency: "JPY",
+    methods: [
+      "Wise ⭐ Recommended",
+      "PayPay",
+      "Bank Transfer",
+    ],
+  },
+
+  {
+    name: "South Korea",
+    currency: "KRW",
+    methods: [
+      "Wise ⭐ Recommended",
+      "Kakao Pay",
+      "Bank Transfer",
+    ],
+  },
+
+  {
+    name: "Australia",
+    currency: "AUD",
+    methods: [
+      "Wise ⭐ Recommended",
+      "PayID",
+      "Bank Transfer",
+    ],
+  },
+
+  {
+    name: "New Zealand",
+    currency: "NZD",
+    methods: [
+      "Wise ⭐ Recommended",
+      "POLi",
       "Bank Transfer",
     ],
   },
@@ -262,15 +480,7 @@ export default function CreateTransactionPage() {
                   e.target.value
                 )
               }
-              className="
-                w-full
-                bg-slate-900
-                border
-                border-white/10
-                rounded-2xl
-                px-5
-                py-5
-              "
+              className="w-full bg-slate-900 border border-white/10 rounded-2xl px-5 py-5"
             />
 
             <input
@@ -281,15 +491,7 @@ export default function CreateTransactionPage() {
                   e.target.value
                 )
               }
-              className="
-                w-full
-                bg-slate-900
-                border
-                border-white/10
-                rounded-2xl
-                px-5
-                py-5
-              "
+              className="w-full bg-slate-900 border border-white/10 rounded-2xl px-5 py-5"
             />
 
           </div>
@@ -304,15 +506,7 @@ export default function CreateTransactionPage() {
                   e.target.value
                 )
               }
-              className="
-                w-full
-                bg-slate-900
-                border
-                border-white/10
-                rounded-2xl
-                px-5
-                py-5
-              "
+              className="w-full bg-slate-900 border border-white/10 rounded-2xl px-5 py-5"
             />
 
             <input
@@ -323,30 +517,12 @@ export default function CreateTransactionPage() {
                   e.target.value
                 )
               }
-              className="
-                w-full
-                bg-slate-900
-                border
-                border-white/10
-                rounded-2xl
-                px-5
-                py-5
-              "
+              className="w-full bg-slate-900 border border-white/10 rounded-2xl px-5 py-5"
             />
 
           </div>
 
-          {/* COUNTRY */}
-
-          <div
-            className="
-              bg-slate-900
-              border
-              border-white/10
-              rounded-3xl
-              p-8
-            "
-          >
+          <div className="bg-slate-900 border border-white/10 rounded-3xl p-8">
 
             <h2 className="text-3xl font-black mb-6">
               Buyer Country
@@ -362,15 +538,7 @@ export default function CreateTransactionPage() {
 
                 setPaymentMethod("");
               }}
-              className="
-                w-full
-                bg-slate-800
-                border
-                border-white/10
-                rounded-2xl
-                px-5
-                py-5
-              "
+              className="w-full bg-slate-800 border border-white/10 rounded-2xl px-5 py-5"
             >
 
               <option value="">
@@ -392,19 +560,9 @@ export default function CreateTransactionPage() {
 
           </div>
 
-          {/* PAYMENT METHODS */}
-
           {selectedCountry && (
 
-            <div
-              className="
-                bg-slate-900
-                border
-                border-green-500
-                rounded-3xl
-                p-8
-              "
-            >
+            <div className="bg-slate-900 border border-green-500 rounded-3xl p-8">
 
               <div className="flex items-center justify-between mb-6">
 
@@ -427,15 +585,12 @@ export default function CreateTransactionPage() {
 
                   <button
                     key={method}
-
                     type="button"
-
                     onClick={() =>
                       setPaymentMethod(
                         method
                       )
                     }
-
                     className={`
                       text-left
                       px-6
@@ -464,19 +619,9 @@ export default function CreateTransactionPage() {
             </div>
           )}
 
-          {/* ESCROW FEES */}
-
           {amount && (
 
-            <div
-              className="
-                bg-slate-900
-                border
-                border-blue-500
-                rounded-3xl
-                p-8
-              "
-            >
+            <div className="bg-slate-900 border border-blue-500 rounded-3xl p-8">
 
               <h2 className="text-3xl font-black mb-8 text-blue-400">
                 Escrow Breakdown
@@ -517,20 +662,10 @@ export default function CreateTransactionPage() {
             </div>
           )}
 
-          {/* CREATE BUTTON */}
-
           <button
             onClick={createTransaction}
             disabled={loading}
-            className="
-              w-full
-              bg-blue-600
-              hover:bg-blue-700
-              rounded-3xl
-              py-6
-              font-black
-              text-2xl
-            "
+            className="w-full bg-blue-600 hover:bg-blue-700 rounded-3xl py-6 font-black text-2xl"
           >
 
             {loading
