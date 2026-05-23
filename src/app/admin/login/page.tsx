@@ -4,12 +4,17 @@ import { useState } from "react";
 
 import { useRouter } from "next/navigation";
 
+import Link from "next/link";
+
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
+
+const ADMIN_EMAIL =
+  "waynerone999@gmail.com";
 
 export default function AdminLoginPage() {
 
@@ -24,59 +29,52 @@ export default function AdminLoginPage() {
   const [loading, setLoading] =
     useState(false);
 
-  async function loginAdmin() {
+  const [error, setError] =
+    useState("");
 
-    try {
+  async function login() {
 
-      setLoading(true);
+    setLoading(true);
 
-      const { data, error } =
-        await supabase
-          .from("admins")
-          .select("*");
+    setError("");
 
-      if (error) {
+    const { data, error } =
+      await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-        alert(
-          "Failed to load admins"
-        );
+    if (error) {
 
-        setLoading(false);
+      setError(error.message);
 
-        return;
-      }
+      setLoading(false);
 
-      const admin =
-        data?.find(
-          (a) =>
-            a.email === email &&
-            a.password === password
-        );
-
-      if (!admin) {
-
-        alert(
-          "Invalid admin credentials"
-        );
-
-        setLoading(false);
-
-        return;
-      }
-
-      document.cookie =
-        "admin_logged_in=true; path=/;";
-
-      router.push(
-        "/admin/dashboard"
-      );
-
-    } catch (err) {
-
-      console.log(err);
-
-      alert("Login failed");
+      return;
     }
+
+    const loggedInEmail =
+      data.user.email
+        ?.trim()
+        .toLowerCase();
+
+    if (
+      loggedInEmail ===
+      ADMIN_EMAIL.toLowerCase()
+    ) {
+
+      router.push("/admin/dashboard");
+
+    } else {
+
+      await supabase.auth.signOut();
+
+      setError(
+        "Not authorized as admin"
+      );
+    }
+
+    setLoading(false);
   }
 
   return (
@@ -100,8 +98,8 @@ export default function AdminLoginPage() {
           bg-slate-900
           border
           border-white/10
-          rounded-[40px]
-          p-10
+          rounded-3xl
+          p-8
         "
       >
 
@@ -109,14 +107,39 @@ export default function AdminLoginPage() {
           className="
             text-5xl
             font-black
-            mb-10
-            text-center
+            mb-3
           "
         >
           Admin Login
         </h1>
 
-        <div className="space-y-6">
+        <p
+          className="
+            text-slate-400
+            mb-8
+          "
+        >
+          Restricted Admin Access
+        </p>
+
+        {error && (
+
+          <div
+            className="
+              bg-red-500/20
+              border
+              border-red-500/30
+              text-red-300
+              p-4
+              rounded-2xl
+              mb-6
+            "
+          >
+            {error}
+          </div>
+        )}
+
+        <div className="space-y-5">
 
           <input
             type="email"
@@ -126,9 +149,7 @@ export default function AdminLoginPage() {
             value={email}
 
             onChange={(e) =>
-              setEmail(
-                e.target.value
-              )
+              setEmail(e.target.value)
             }
 
             className="
@@ -139,6 +160,7 @@ export default function AdminLoginPage() {
               rounded-2xl
               px-5
               py-4
+              outline-none
             "
           />
 
@@ -150,9 +172,7 @@ export default function AdminLoginPage() {
             value={password}
 
             onChange={(e) =>
-              setPassword(
-                e.target.value
-              )
+              setPassword(e.target.value)
             }
 
             className="
@@ -163,11 +183,12 @@ export default function AdminLoginPage() {
               rounded-2xl
               px-5
               py-4
+              outline-none
             "
           />
 
           <button
-            onClick={loginAdmin}
+            onClick={login}
 
             disabled={loading}
 
@@ -175,17 +196,31 @@ export default function AdminLoginPage() {
               w-full
               bg-blue-600
               hover:bg-blue-700
-              rounded-2xl
               py-4
+              rounded-2xl
               font-black
+              text-lg
             "
           >
-
             {loading
-              ? "Logging in..."
-              : "Login Admin"}
-
+              ? "Signing In..."
+              : "Login"}
           </button>
+
+        </div>
+
+        <div className="mt-8 text-center">
+
+          <Link
+            href="/"
+
+            className="
+              text-slate-400
+              hover:text-white
+            "
+          >
+            Back to Home
+          </Link>
 
         </div>
 
