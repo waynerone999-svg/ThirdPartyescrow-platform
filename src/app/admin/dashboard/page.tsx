@@ -13,6 +13,9 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
+const ADMIN_EMAIL =
+  "waynerone999@gmail.com";
+
 export default function AdminDashboard() {
 
   const router = useRouter();
@@ -23,26 +26,39 @@ export default function AdminDashboard() {
   const [loading, setLoading] =
     useState(true);
 
+  const [stats, setStats] =
+    useState({
+      total: 0,
+      completed: 0,
+      disputed: 0,
+      pending: 0,
+      paid: 0,
+      released: 0,
+    });
+
   async function loadData() {
 
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
+    console.log("CURRENT USER:", user);
+
     if (!user) {
 
-      router.push("/login");
+      router.push("/admin/login");
 
       return;
     }
 
-    console.log(user.email);
+    const currentEmail =
+      user.email
+        ?.trim()
+        .toLowerCase();
 
     if (
-      user.email
-        ?.toLowerCase()
-        .trim() !==
-      "waynerone999@gmail.com"
+      currentEmail !==
+      ADMIN_EMAIL.toLowerCase()
     ) {
 
       router.push("/dashboard");
@@ -67,6 +83,40 @@ export default function AdminDashboard() {
 
     setTransactions(data || []);
 
+    setStats({
+      total: data?.length || 0,
+
+      completed:
+        data?.filter(
+          (t) =>
+            t.status === "completed"
+        ).length || 0,
+
+      disputed:
+        data?.filter(
+          (t) =>
+            t.status === "disputed"
+        ).length || 0,
+
+      pending:
+        data?.filter(
+          (t) =>
+            t.status === "pending"
+        ).length || 0,
+
+      paid:
+        data?.filter(
+          (t) =>
+            t.status === "paid"
+        ).length || 0,
+
+      released:
+        data?.filter(
+          (t) =>
+            t.status === "released"
+        ).length || 0,
+    });
+
     setLoading(false);
   }
 
@@ -74,7 +124,7 @@ export default function AdminDashboard() {
 
     await supabase.auth.signOut();
 
-    router.push("/login");
+    router.push("/admin/login");
   }
 
   async function markCompleted(id: number) {
@@ -123,30 +173,6 @@ export default function AdminDashboard() {
     loadData();
 
   }, []);
-
-  const total =
-    transactions.length;
-
-  const completed =
-    transactions.filter(
-      (t) =>
-        t.status ===
-        "completed"
-    ).length;
-
-  const disputed =
-    transactions.filter(
-      (t) =>
-        t.status ===
-        "disputed"
-    ).length;
-
-  const pending =
-    transactions.filter(
-      (t) =>
-        t.status ===
-        "pending"
-    ).length;
 
   if (loading) {
 
@@ -211,6 +237,7 @@ export default function AdminDashboard() {
               className="
                 text-slate-400
                 mt-2
+                text-lg
               "
             >
               3rdParty Escrow Security Center
@@ -228,6 +255,7 @@ export default function AdminDashboard() {
               py-4
               rounded-2xl
               font-bold
+              text-lg
             "
           >
             Logout
@@ -235,13 +263,12 @@ export default function AdminDashboard() {
 
         </div>
 
-        {/* STATS */}
-
         <div
           className="
             grid
             grid-cols-2
-            md:grid-cols-4
+            md:grid-cols-3
+            xl:grid-cols-6
             gap-5
             mb-10
           "
@@ -249,27 +276,41 @@ export default function AdminDashboard() {
 
           <StatCard
             title="Total"
-            value={total}
+            value={stats.total}
+            color="border-white/10"
           />
 
           <StatCard
             title="Completed"
-            value={completed}
+            value={stats.completed}
+            color="border-green-500/30"
           />
 
           <StatCard
             title="Disputed"
-            value={disputed}
+            value={stats.disputed}
+            color="border-red-500/30"
           />
 
           <StatCard
             title="Pending"
-            value={pending}
+            value={stats.pending}
+            color="border-yellow-500/30"
+          />
+
+          <StatCard
+            title="Paid"
+            value={stats.paid}
+            color="border-blue-500/30"
+          />
+
+          <StatCard
+            title="Released"
+            value={stats.released}
+            color="border-purple-500/30"
           />
 
         </div>
-
-        {/* TABLE */}
 
         <div
           className="
@@ -281,13 +322,7 @@ export default function AdminDashboard() {
           "
         >
 
-          <div
-            className="
-              p-6
-              border-b
-              border-white/10
-            "
-          >
+          <div className="p-6 border-b border-white/10">
 
             <h2
               className="
@@ -327,6 +362,10 @@ export default function AdminDashboard() {
 
                   <th className="p-6">
                     Status
+                  </th>
+
+                  <th className="p-6">
+                    Payment
                   </th>
 
                   <th className="p-6">
@@ -394,6 +433,10 @@ export default function AdminDashboard() {
                         {t.status}
                       </span>
 
+                    </td>
+
+                    <td className="p-6">
+                      {t.payment_method}
                     </td>
 
                     <td className="p-6">
@@ -498,18 +541,19 @@ export default function AdminDashboard() {
 function StatCard({
   title,
   value,
+  color,
 }: any) {
 
   return (
 
     <div
-      className="
+      className={`
         bg-slate-950
         border
-        border-white/10
+        ${color}
         rounded-3xl
         p-6
-      "
+      `}
     >
 
       <p
