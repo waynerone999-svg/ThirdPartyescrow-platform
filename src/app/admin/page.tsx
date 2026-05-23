@@ -13,20 +13,27 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-export default function AdminPage() {
+export default function AdminDashboard() {
 
   const router = useRouter();
-
-  const [loading, setLoading] =
-    useState(true);
 
   const [transactions, setTransactions] =
     useState<any[]>([]);
 
-  const [userEmail, setUserEmail] =
-    useState("");
+  const [loading, setLoading] =
+    useState(true);
 
-  async function loadAdmin() {
+  const [stats, setStats] =
+    useState({
+      total: 0,
+      completed: 0,
+      disputed: 0,
+      pending: 0,
+      paid: 0,
+      released: 0,
+    });
+
+  async function loadData() {
 
     const {
       data: { user },
@@ -38,10 +45,6 @@ export default function AdminPage() {
 
       return;
     }
-
-    setUserEmail(user.email || "");
-
-    /* ADMIN SECURITY */
 
     if (
       user.email !==
@@ -61,11 +64,48 @@ export default function AdminPage() {
           ascending: false,
         });
 
-    if (!error) {
+    if (error) {
 
-      setTransactions(data || []);
+      console.log(error);
 
+      return;
     }
+
+    setTransactions(data || []);
+
+    setStats({
+      total: data?.length || 0,
+
+      completed:
+        data?.filter(
+          (t) =>
+            t.status === "completed"
+        ).length || 0,
+
+      disputed:
+        data?.filter(
+          (t) =>
+            t.status === "disputed"
+        ).length || 0,
+
+      pending:
+        data?.filter(
+          (t) =>
+            t.status === "pending"
+        ).length || 0,
+
+      paid:
+        data?.filter(
+          (t) =>
+            t.status === "paid"
+        ).length || 0,
+
+      released:
+        data?.filter(
+          (t) =>
+            t.status === "released"
+        ).length || 0,
+    });
 
     setLoading(false);
   }
@@ -77,41 +117,52 @@ export default function AdminPage() {
     router.push("/login");
   }
 
+  async function markCompleted(id: number) {
+
+    await supabase
+      .from("transactions")
+      .update({
+        status: "completed",
+      })
+      .eq("id", id);
+
+    loadData();
+  }
+
+  async function markDisputed(id: number) {
+
+    await supabase
+      .from("transactions")
+      .update({
+        status: "disputed",
+      })
+      .eq("id", id);
+
+    loadData();
+  }
+
+  async function deleteTransaction(id: number) {
+
+    const confirmDelete =
+      confirm(
+        "Delete this transaction?"
+      );
+
+    if (!confirmDelete) return;
+
+    await supabase
+      .from("transactions")
+      .delete()
+      .eq("id", id);
+
+    loadData();
+  }
+
   useEffect(() => {
 
-    loadAdmin();
+    loadData();
 
   }, []);
-
-  const pending =
-    transactions.filter(
-      (t) =>
-        t.status === "pending"
-    );
-
-  const paid =
-    transactions.filter(
-      (t) =>
-        t.status === "paid"
-    );
-
-  const released =
-    transactions.filter(
-      (t) =>
-        t.status === "released"
-    );
-
-  const completed =
-    transactions.filter(
-      (t) =>
-        t.status === "completed"
-    );
-
-  const disputed =
-    transactions.filter(
-      (t) =>
-        t.status === "disputed"
-    );
 
   if (loading) {
 
@@ -120,7 +171,7 @@ export default function AdminPage() {
       <main
         className="
           min-h-screen
-          bg-slate-950
+          bg-[#020617]
           text-white
           flex
           items-center
@@ -139,26 +190,25 @@ export default function AdminPage() {
     <main
       className="
         min-h-screen
-        bg-slate-950
+        bg-[#020617]
         text-white
         p-4
-        md:p-10
+        md:p-8
       "
     >
 
       <div className="max-w-7xl mx-auto">
 
         {/* HEADER */}
-
         <div
           className="
             flex
             flex-col
-            lg:flex-row
-            justify-between
-            lg:items-center
-            gap-6
-            mb-12
+            md:flex-row
+            md:items-center
+            md:justify-between
+            gap-4
+            mb-10
           "
         >
 
@@ -167,37 +217,36 @@ export default function AdminPage() {
             <h1
               className="
                 text-4xl
-                md:text-7xl
+                md:text-6xl
                 font-black
-                mb-3
               "
             >
               Admin Dashboard
             </h1>
 
-            <p className="text-slate-400">
-
-              Logged in as:
-
-              {" "}
-
-              <span className="text-white font-bold">
-                {userEmail}
-              </span>
-
+            <p
+              className="
+                text-slate-400
+                mt-2
+                text-lg
+              "
+            >
+              3rdParty Escrow Security Center
             </p>
 
           </div>
 
           <button
             onClick={logout}
+
             className="
               bg-red-600
               hover:bg-red-700
-              px-6
+              px-8
               py-4
               rounded-2xl
               font-bold
+              text-lg
             "
           >
             Logout
@@ -206,237 +255,444 @@ export default function AdminPage() {
         </div>
 
         {/* STATS */}
-
         <div
           className="
             grid
             grid-cols-2
-            lg:grid-cols-5
+            md:grid-cols-3
+            xl:grid-cols-6
             gap-5
-            mb-12
+            mb-10
           "
         >
 
-          <div
+          <StatCard
+            title="Total"
+            value={stats.total}
+            color="border-white/10"
+          />
+
+          <StatCard
+            title="Completed"
+            value={stats.completed}
+            color="border-green-500/30"
+          />
+
+          <StatCard
+            title="Disputed"
+            value={stats.disputed}
+            color="border-red-500/30"
+          />
+
+          <StatCard
+            title="Pending"
+            value={stats.pending}
+            color="border-yellow-500/30"
+          />
+
+          <StatCard
+            title="Paid"
+            value={stats.paid}
+            color="border-blue-500/30"
+          />
+
+          <StatCard
+            title="Released"
+            value={stats.released}
+            color="border-purple-500/30"
+          />
+
+        </div>
+
+        {/* DISPUTE CENTER */}
+        <div
+          className="
+            bg-red-950/30
+            border
+            border-red-500/20
+            rounded-3xl
+            p-6
+            mb-10
+          "
+        >
+
+          <h2
             className="
-              bg-slate-900
-              border
-              border-white/10
-              rounded-3xl
-              p-5
+              text-4xl
+              font-black
+              text-red-400
+              mb-3
             "
           >
+            Dispute Center
+          </h2>
 
-            <p className="text-slate-400 mb-2">
-              Total
-            </p>
-
-            <h2 className="text-4xl font-black">
-              {transactions.length}
-            </h2>
-
-          </div>
-
-          <div
+          <p
             className="
-              bg-slate-900
-              border
-              border-yellow-500/30
-              rounded-3xl
-              p-5
+              text-slate-300
+              mb-6
             "
           >
-
-            <p className="text-yellow-400 mb-2">
-              Pending
-            </p>
-
-            <h2 className="text-4xl font-black">
-              {pending.length}
-            </h2>
-
-          </div>
-
-          <div
-            className="
-              bg-slate-900
-              border
-              border-green-500/30
-              rounded-3xl
-              p-5
-            "
-          >
-
-            <p className="text-green-400 mb-2">
-              Paid
-            </p>
-
-            <h2 className="text-4xl font-black">
-              {paid.length}
-            </h2>
-
-          </div>
-
-          <div
-            className="
-              bg-slate-900
-              border
-              border-blue-500/30
-              rounded-3xl
-              p-5
-            "
-          >
-
-            <p className="text-blue-400 mb-2">
-              Completed
-            </p>
-
-            <h2 className="text-4xl font-black">
-              {completed.length}
-            </h2>
-
-          </div>
+            Manage disputed escrow transactions
+          </p>
 
           <div
             className="
               bg-slate-900
-              border
-              border-red-500/30
               rounded-3xl
-              p-5
+              p-6
             "
           >
 
-            <p className="text-red-400 mb-2">
-              Disputed
-            </p>
+            {transactions.filter(
+              (t) =>
+                t.status === "disputed"
+            ).length === 0 ? (
 
-            <h2 className="text-4xl font-black">
-              {disputed.length}
-            </h2>
+              <div
+                className="
+                  text-center
+                  text-slate-400
+                  py-8
+                "
+              >
+                No active disputes.
+              </div>
+
+            ) : (
+
+              <div className="space-y-4">
+
+                {transactions
+                  .filter(
+                    (t) =>
+                      t.status === "disputed"
+                  )
+                  .map((t) => (
+
+                    <div
+                      key={t.id}
+
+                      className="
+                        bg-slate-800
+                        rounded-2xl
+                        p-5
+                        flex
+                        flex-col
+                        md:flex-row
+                        md:items-center
+                        md:justify-between
+                        gap-4
+                      "
+                    >
+
+                      <div>
+
+                        <h3
+                          className="
+                            text-2xl
+                            font-bold
+                          "
+                        >
+                          {t.transaction_name}
+                        </h3>
+
+                        <p className="text-slate-400">
+                          ${t.amount}
+                        </p>
+
+                      </div>
+
+                      <Link
+                        href={`/transaction/${t.id}`}
+
+                        className="
+                          bg-blue-600
+                          hover:bg-blue-700
+                          px-6
+                          py-3
+                          rounded-2xl
+                          font-bold
+                          text-center
+                        "
+                      >
+                        Open Case
+                      </Link>
+
+                    </div>
+                  ))}
+
+              </div>
+            )}
 
           </div>
 
         </div>
 
         {/* TRANSACTIONS */}
+        <div
+          className="
+            bg-slate-950
+            border
+            border-white/10
+            rounded-3xl
+            overflow-hidden
+          "
+        >
 
-        <div className="space-y-6">
+          <div className="p-6 border-b border-white/10">
 
-          {transactions.map((tx) => (
-
-            <Link
-              key={tx.id}
-              href={`/transaction/${tx.id}`}
+            <h2
+              className="
+                text-4xl
+                font-black
+              "
             >
+              All Transactions
+            </h2>
 
-              <div
+          </div>
+
+          <div className="overflow-x-auto">
+
+            <table className="w-full min-w-[1000px]">
+
+              <thead
                 className="
                   bg-slate-900
-                  border
-                  border-white/10
-                  hover:border-blue-500/40
-                  rounded-3xl
-                  p-6
-                  transition
-                  cursor-pointer
+                  text-left
                 "
               >
 
-                <div
-                  className="
-                    flex
-                    flex-col
-                    xl:flex-row
-                    xl:items-center
-                    xl:justify-between
-                    gap-6
-                  "
-                >
+                <tr>
 
-                  <div>
+                  <th className="p-6">
+                    ID
+                  </th>
 
-                    <h2
-                      className="
-                        text-2xl
-                        md:text-3xl
-                        font-black
-                        mb-4
-                      "
-                    >
-                      {tx.transaction_name}
-                    </h2>
+                  <th className="p-6">
+                    Transaction
+                  </th>
 
-                    <div className="space-y-2 text-slate-400">
+                  <th className="p-6">
+                    Amount
+                  </th>
 
-                      <p>
-                        Buyer:
-                        {" "}
-                        {tx.buyer_email}
-                      </p>
+                  <th className="p-6">
+                    Status
+                  </th>
 
-                      <p>
-                        Seller:
-                        {" "}
-                        {tx.seller_email}
-                      </p>
+                  <th className="p-6">
+                    Payment
+                  </th>
 
-                      <p>
-                        Amount:
-                        {" "}
-                        ${tx.amount}
-                      </p>
+                  <th className="p-6">
+                    Actions
+                  </th>
 
-                      <p>
-                        Country:
-                        {" "}
-                        {tx.buyer_country || "N/A"}
-                      </p>
+                </tr>
 
-                      <p>
-                        Payment:
-                        {" "}
-                        {tx.payment_method}
-                      </p>
+              </thead>
 
-                      <p>
-                        Code:
-                        {" "}
-                        {tx.transaction_code}
-                      </p>
+              <tbody>
 
-                    </div>
+                {transactions.map((t) => (
 
-                  </div>
+                  <tr
+                    key={t.id}
 
-                  <div
                     className="
-                      bg-blue-600/20
-                      text-blue-300
-                      px-6
-                      py-4
-                      rounded-2xl
-                      font-bold
-                      capitalize
-                      text-center
-                      min-w-[160px]
+                      border-t
+                      border-white/5
                     "
                   >
-                    {tx.status}
-                  </div>
 
-                </div>
+                    <td className="p-6">
+                      #{t.id}
+                    </td>
 
-              </div>
+                    <td className="p-6">
 
-            </Link>
+                      <div>
 
-          ))}
+                        <h3
+                          className="
+                            text-2xl
+                            font-bold
+                          "
+                        >
+                          {t.transaction_name}
+                        </h3>
+
+                        <p className="text-slate-400">
+                          {t.buyer_email}
+                        </p>
+
+                      </div>
+
+                    </td>
+
+                    <td className="p-6 text-2xl">
+                      ${t.amount}
+                    </td>
+
+                    <td className="p-6">
+
+                      <span
+                        className="
+                          bg-slate-800
+                          px-5
+                          py-2
+                          rounded-full
+                          text-lg
+                          font-bold
+                        "
+                      >
+                        {t.status}
+                      </span>
+
+                    </td>
+
+                    <td className="p-6">
+                      {t.payment_method}
+                    </td>
+
+                    <td className="p-6">
+
+                      <div
+                        className="
+                          flex
+                          flex-wrap
+                          gap-3
+                        "
+                      >
+
+                        <Link
+                          href={`/transaction/${t.id}`}
+
+                          className="
+                            bg-blue-600
+                            hover:bg-blue-700
+                            px-5
+                            py-3
+                            rounded-2xl
+                            font-bold
+                          "
+                        >
+                          Open
+                        </Link>
+
+                        <button
+                          onClick={() =>
+                            markCompleted(t.id)
+                          }
+
+                          className="
+                            bg-green-600
+                            hover:bg-green-700
+                            px-5
+                            py-3
+                            rounded-2xl
+                            font-bold
+                          "
+                        >
+                          Complete
+                        </button>
+
+                        <button
+                          onClick={() =>
+                            markDisputed(t.id)
+                          }
+
+                          className="
+                            bg-yellow-600
+                            hover:bg-yellow-700
+                            px-5
+                            py-3
+                            rounded-2xl
+                            font-bold
+                          "
+                        >
+                          Dispute
+                        </button>
+
+                        <button
+                          onClick={() =>
+                            deleteTransaction(
+                              t.id
+                            )
+                          }
+
+                          className="
+                            bg-red-600
+                            hover:bg-red-700
+                            px-5
+                            py-3
+                            rounded-2xl
+                            font-bold
+                          "
+                        >
+                          Delete
+                        </button>
+
+                      </div>
+
+                    </td>
+
+                  </tr>
+                ))}
+
+              </tbody>
+
+            </table>
+
+          </div>
 
         </div>
 
       </div>
 
     </main>
+  );
+}
+
+function StatCard({
+  title,
+  value,
+  color,
+}: any) {
+
+  return (
+
+    <div
+      className={`
+        bg-slate-950
+        border
+        ${color}
+        rounded-3xl
+        p-6
+      `}
+    >
+
+      <p
+        className="
+          text-slate-300
+          text-xl
+          mb-5
+        "
+      >
+        {title}
+      </p>
+
+      <h2
+        className="
+          text-6xl
+          font-black
+        "
+      >
+        {value}
+      </h2>
+
+    </div>
   );
 }
