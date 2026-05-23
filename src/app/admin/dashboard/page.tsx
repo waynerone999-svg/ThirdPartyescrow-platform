@@ -23,10 +23,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] =
     useState(true);
 
-  const adminEmail =
-    "waynerone999@gmail.com";
-
-  async function checkAdmin() {
+  async function loadData() {
 
     const {
       data: { user },
@@ -39,19 +36,19 @@ export default function AdminDashboard() {
       return;
     }
 
+    console.log(user.email);
+
     if (
-      user.email !== adminEmail
+      user.email
+        ?.toLowerCase()
+        .trim() !==
+      "waynerone999@gmail.com"
     ) {
 
       router.push("/dashboard");
 
       return;
     }
-
-    loadTransactions();
-  }
-
-  async function loadTransactions() {
 
     const { data, error } =
       await supabase
@@ -61,15 +58,26 @@ export default function AdminDashboard() {
           ascending: false,
         });
 
-    if (!error && data) {
+    if (error) {
 
-      setTransactions(data);
+      console.log(error);
+
+      return;
     }
+
+    setTransactions(data || []);
 
     setLoading(false);
   }
 
-  async function forceComplete(id: number) {
+  async function logout() {
+
+    await supabase.auth.signOut();
+
+    router.push("/login");
+  }
+
+  async function markCompleted(id: number) {
 
     await supabase
       .from("transactions")
@@ -78,10 +86,10 @@ export default function AdminDashboard() {
       })
       .eq("id", id);
 
-    loadTransactions();
+    loadData();
   }
 
-  async function forceDispute(id: number) {
+  async function markDisputed(id: number) {
 
     await supabase
       .from("transactions")
@@ -90,7 +98,7 @@ export default function AdminDashboard() {
       })
       .eq("id", id);
 
-    loadTransactions();
+    loadData();
   }
 
   async function deleteTransaction(id: number) {
@@ -107,19 +115,12 @@ export default function AdminDashboard() {
       .delete()
       .eq("id", id);
 
-    loadTransactions();
-  }
-
-  async function logout() {
-
-    await supabase.auth.signOut();
-
-    router.push("/login");
+    loadData();
   }
 
   useEffect(() => {
 
-    checkAdmin();
+    loadData();
 
   }, []);
 
@@ -147,20 +148,6 @@ export default function AdminDashboard() {
         "pending"
     ).length;
 
-  const paid =
-    transactions.filter(
-      (t) =>
-        t.status ===
-        "paid"
-    ).length;
-
-  const released =
-    transactions.filter(
-      (t) =>
-        t.status ===
-        "released"
-    ).length;
-
   if (loading) {
 
     return (
@@ -168,7 +155,7 @@ export default function AdminDashboard() {
       <main
         className="
           min-h-screen
-          bg-black
+          bg-[#020617]
           text-white
           flex
           items-center
@@ -196,7 +183,6 @@ export default function AdminDashboard() {
 
       <div className="max-w-7xl mx-auto">
 
-        {/* TOPBAR */}
         <div
           className="
             flex
@@ -227,8 +213,7 @@ export default function AdminDashboard() {
                 mt-2
               "
             >
-              3rdParty Escrow
-              Security Center
+              3rdParty Escrow Security Center
             </p>
 
           </div>
@@ -239,12 +224,10 @@ export default function AdminDashboard() {
             className="
               bg-red-600
               hover:bg-red-700
-              px-6
-              py-3
+              px-8
+              py-4
               rounded-2xl
               font-bold
-              w-full
-              md:w-auto
             "
           >
             Logout
@@ -253,13 +236,13 @@ export default function AdminDashboard() {
         </div>
 
         {/* STATS */}
+
         <div
           className="
             grid
             grid-cols-2
-            md:grid-cols-3
-            xl:grid-cols-6
-            gap-4
+            md:grid-cols-4
+            gap-5
             mb-10
           "
         >
@@ -267,45 +250,30 @@ export default function AdminDashboard() {
           <StatCard
             title="Total"
             value={total}
-            color="border-white/10"
           />
 
           <StatCard
             title="Completed"
             value={completed}
-            color="border-green-500/30"
           />
 
           <StatCard
             title="Disputed"
             value={disputed}
-            color="border-red-500/30"
           />
 
           <StatCard
             title="Pending"
             value={pending}
-            color="border-yellow-500/30"
-          />
-
-          <StatCard
-            title="Paid"
-            value={paid}
-            color="border-blue-500/30"
-          />
-
-          <StatCard
-            title="Released"
-            value={released}
-            color="border-purple-500/30"
           />
 
         </div>
 
         {/* TABLE */}
+
         <div
           className="
-            bg-[#07122b]
+            bg-slate-950
             border
             border-white/10
             rounded-3xl
@@ -323,8 +291,7 @@ export default function AdminDashboard() {
 
             <h2
               className="
-                text-3xl
-                md:text-5xl
+                text-4xl
                 font-black
               "
             >
@@ -339,7 +306,7 @@ export default function AdminDashboard() {
 
               <thead
                 className="
-                  bg-[#091734]
+                  bg-slate-900
                   text-left
                 "
               >
@@ -363,10 +330,6 @@ export default function AdminDashboard() {
                   </th>
 
                   <th className="p-6">
-                    Payment
-                  </th>
-
-                  <th className="p-6">
                     Actions
                   </th>
 
@@ -376,10 +339,10 @@ export default function AdminDashboard() {
 
               <tbody>
 
-                {transactions.map((tx) => (
+                {transactions.map((t) => (
 
                   <tr
-                    key={tx.id}
+                    key={t.id}
 
                     className="
                       border-t
@@ -387,45 +350,50 @@ export default function AdminDashboard() {
                     "
                   >
 
-                    <td className="p-6 font-bold">
-                      #{tx.id}
+                    <td className="p-6">
+                      #{t.id}
                     </td>
 
                     <td className="p-6">
 
-                      <div className="font-bold text-xl">
-                        {tx.transaction_name}
-                      </div>
+                      <div>
 
-                      <div className="text-slate-400 text-sm mt-1">
-                        {tx.buyer_email}
+                        <h3
+                          className="
+                            text-2xl
+                            font-bold
+                          "
+                        >
+                          {t.transaction_name}
+                        </h3>
+
+                        <p className="text-slate-400">
+                          {t.buyer_email}
+                        </p>
+
                       </div>
 
                     </td>
 
-                    <td className="p-6 text-2xl font-bold">
-                      ${tx.amount}
+                    <td className="p-6 text-2xl">
+                      ${t.amount}
                     </td>
 
                     <td className="p-6">
 
                       <span
                         className="
+                          bg-slate-800
                           px-5
                           py-2
                           rounded-full
-                          text-sm
+                          text-lg
                           font-bold
-                          bg-slate-800
                         "
                       >
-                        {tx.status}
+                        {t.status}
                       </span>
 
-                    </td>
-
-                    <td className="p-6">
-                      {tx.payment_method}
                     </td>
 
                     <td className="p-6">
@@ -439,12 +407,12 @@ export default function AdminDashboard() {
                       >
 
                         <Link
-                          href={`/transaction/${tx.id}`}
+                          href={`/transaction/${t.id}`}
 
                           className="
                             bg-blue-600
                             hover:bg-blue-700
-                            px-6
+                            px-5
                             py-3
                             rounded-2xl
                             font-bold
@@ -455,13 +423,13 @@ export default function AdminDashboard() {
 
                         <button
                           onClick={() =>
-                            forceComplete(tx.id)
+                            markCompleted(t.id)
                           }
 
                           className="
                             bg-green-600
                             hover:bg-green-700
-                            px-6
+                            px-5
                             py-3
                             rounded-2xl
                             font-bold
@@ -472,13 +440,13 @@ export default function AdminDashboard() {
 
                         <button
                           onClick={() =>
-                            forceDispute(tx.id)
+                            markDisputed(t.id)
                           }
 
                           className="
                             bg-yellow-600
                             hover:bg-yellow-700
-                            px-6
+                            px-5
                             py-3
                             rounded-2xl
                             font-bold
@@ -489,13 +457,15 @@ export default function AdminDashboard() {
 
                         <button
                           onClick={() =>
-                            deleteTransaction(tx.id)
+                            deleteTransaction(
+                              t.id
+                            )
                           }
 
                           className="
                             bg-red-600
                             hover:bg-red-700
-                            px-6
+                            px-5
                             py-3
                             rounded-2xl
                             font-bold
@@ -509,7 +479,6 @@ export default function AdminDashboard() {
                     </td>
 
                   </tr>
-
                 ))}
 
               </tbody>
@@ -529,28 +498,33 @@ export default function AdminDashboard() {
 function StatCard({
   title,
   value,
-  color,
 }: any) {
 
   return (
 
     <div
-      className={`
-        bg-[#07122b]
+      className="
+        bg-slate-950
         border
-        ${color}
+        border-white/10
         rounded-3xl
         p-6
-      `}
+      "
     >
 
-      <p className="text-slate-400 mb-4">
+      <p
+        className="
+          text-slate-300
+          text-xl
+          mb-5
+        "
+      >
         {title}
       </p>
 
       <h2
         className="
-          text-5xl
+          text-6xl
           font-black
         "
       >

@@ -14,69 +14,126 @@ export async function POST(req: Request) {
       email,
       transactionId,
       transactionName,
+      amount,
+      buyerEmail,
     } = body;
 
     const inviteLink =
-      `${process.env.NEXT_PUBLIC_URL}/register?transaction=${transactionId}`;
+      `${process.env.NEXT_PUBLIC_URL}/transaction/${transactionId}`;
 
-    await resend.emails.send({
+    const { error } =
+      await resend.emails.send({
 
-      from:
-        "onboarding@resend.dev",
+        from:
+          "3rdParty Escrow <onboarding@resend.dev>",
 
-      to: email,
+        to: email,
 
-      subject:
-        "Escrow Transaction Invitation",
+        subject:
+          "Secure Escrow Transaction Invitation",
 
-      html: `
+        html: `
 
-        <div style="
-          font-family: Arial;
-          padding: 30px;
-        ">
+          <div style="
+            background:#020617;
+            padding:50px;
+            font-family:Arial;
+            color:white;
+          ">
 
-          <h1>
-            Escrow Invitation
-          </h1>
+            <div style="
+              max-width:700px;
+              margin:auto;
+              background:#0f172a;
+              border-radius:30px;
+              padding:50px;
+            ">
 
-          <p>
+              <h1 style="
+                font-size:42px;
+                margin-bottom:20px;
+              ">
+                3rdParty Escrow
+              </h1>
 
-            You were invited to join:
+              <p style="
+                color:#94a3b8;
+                font-size:18px;
+                line-height:1.8;
+              ">
+                You have been invited into a secure escrow transaction.
+              </p>
 
-            <strong>
-              ${transactionName}
-            </strong>
+              <div style="
+                margin-top:35px;
+                background:#111827;
+                padding:30px;
+                border-radius:20px;
+              ">
 
-          </p>
+                <p>
+                  <strong>Transaction:</strong>
+                  ${transactionName}
+                </p>
 
-          <p>
+                <p>
+                  <strong>Amount:</strong>
+                  $${amount}
+                </p>
 
-            Click below to create account
-            or login.
+                <p>
+                  <strong>Buyer:</strong>
+                  ${buyerEmail}
+                </p>
 
-          </p>
+              </div>
 
-          <a
-            href="${inviteLink}"
-            style="
-              display:inline-block;
-              margin-top:20px;
-              background:#2563eb;
-              color:white;
-              padding:14px 24px;
-              border-radius:10px;
-              text-decoration:none;
-              font-weight:bold;
-            "
-          >
-            Open Transaction
-          </a>
+              <div style="
+                margin-top:40px;
+              ">
 
-        </div>
+                <a
+                  href="${inviteLink}"
+                  style="
+                    background:#2563eb;
+                    color:white;
+                    text-decoration:none;
+                    padding:18px 35px;
+                    border-radius:16px;
+                    font-weight:bold;
+                    display:inline-block;
+                  "
+                >
+                  Open Transaction
+                </a>
 
-      `,
-    });
+              </div>
+
+              <p style="
+                margin-top:40px;
+                color:#64748b;
+                line-height:1.8;
+              ">
+                Funds remain protected until both parties
+                complete the transaction.
+              </p>
+
+            </div>
+
+          </div>
+
+        `,
+      });
+
+    if (error) {
+
+      console.log(error);
+
+      return Response.json({
+        success: false,
+        error,
+      });
+    }
 
     return Response.json({
       success: true,
@@ -88,7 +145,7 @@ export async function POST(req: Request) {
 
     return Response.json({
       success: false,
+      error: err,
     });
-
   }
 }
