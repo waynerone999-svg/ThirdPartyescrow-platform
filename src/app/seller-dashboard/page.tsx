@@ -51,6 +51,8 @@ export default function SellerDashboard() {
 
     setUser(user);
 
+    /* BUYER OR SELLER CAN SEE */
+
     const { data, error } =
       await supabase
 
@@ -58,9 +60,8 @@ export default function SellerDashboard() {
 
         .select("*")
 
-        .eq(
-          "seller_email",
-          user.email
+        .or(
+          `seller_email.eq.${user.email},buyer_email.eq.${user.email}`
         )
 
         .order("id", {
@@ -289,7 +290,7 @@ export default function SellerDashboard() {
               text-slate-400
             "
           >
-            No seller requests found.
+            No transactions found.
           </div>
         )}
 
@@ -341,6 +342,27 @@ export default function SellerDashboard() {
                       {deal.transaction_name}
                     </h2>
 
+                    {/* ROLE */}
+
+                    <div
+                      className="
+                        inline-block
+                        bg-purple-500/20
+                        text-purple-300
+                        px-4
+                        py-2
+                        rounded-full
+                        text-sm
+                        font-bold
+                        mb-5
+                      "
+                    >
+                      {user?.email ===
+                      deal.seller_email
+                        ? "You are Seller"
+                        : "You are Buyer"}
+                    </div>
+
                     <div className="space-y-3">
 
                       <p className="text-slate-300">
@@ -361,13 +383,21 @@ export default function SellerDashboard() {
 
                       <p className="text-slate-300">
                         <span className="text-slate-500">
+                          Seller:
+                        </span>
+                        {" "}
+                        {deal.seller_email}
+                      </p>
+
+                      <p className="text-slate-300">
+                        <span className="text-slate-500">
                           Payment Method:
                         </span>
                         {" "}
                         {deal.payment_method}
                       </p>
 
-                      {/* PAYOUT SECTION */}
+                      {/* PAYOUT */}
 
                       <div
                         className="
@@ -388,7 +418,7 @@ export default function SellerDashboard() {
                             mb-4
                           "
                         >
-                          Your Payout Details
+                          Seller Payout Details
                         </h3>
 
                         {deal.seller_payout_method ? (
@@ -416,7 +446,7 @@ export default function SellerDashboard() {
                         ) : (
 
                           <p className="text-yellow-400">
-                            Payout details not submitted yet
+                            Seller has not submitted payout details yet
                           </p>
 
                         )}
