@@ -36,7 +36,9 @@ export default function SellerDashboard() {
       totalAmount: 0,
     });
 
-  async function loadSellerTransactions() {
+ async function loadSellerTransactions() {
+
+  try {
 
     const {
       data: { user },
@@ -51,67 +53,103 @@ export default function SellerDashboard() {
 
     setUser(user);
 
-    /* FIXED QUERY */
+    /* SELLER DEALS */
 
-    const { data, error } =
-      await supabase
+    const {
+      data: sellerDeals,
+      error: sellerError,
+    } = await supabase
+      .from("transactions")
+      .select("*")
+      .eq(
+        "seller_email",
+        user.email
+      );
 
-        .from("transactions")
+    /* BUYER DEALS */
 
-        .select("*")
+    const {
+      data: buyerDeals,
+      error: buyerError,
+    } = await supabase
+      .from("transactions")
+      .select("*")
+      .eq(
+        "buyer_email",
+        user.email
+      );
 
-        .or(
-          `seller_email.eq."${user.email}",buyer_email.eq."${user.email}"`
-        )
+    if (
+      sellerError ||
+      buyerError
+    ) {
 
-        .order("id", {
-          ascending: false,
-        });
-
-    if (error) {
-
-      console.log(error);
+      console.log(
+        sellerError || buyerError
+      );
 
       setLoading(false);
 
       return;
     }
 
-    const deals = data || [];
+    /* MERGE */
 
-    setTransactions(deals);
+    const mergedDeals = [
+      ...(sellerDeals || []),
+      ...(buyerDeals || []),
+    ];
+
+    /* REMOVE DUPLICATES */
+
+    const uniqueDeals =
+      mergedDeals.filter(
+        (deal, index, self) =>
+          index ===
+          self.findIndex(
+            (d) => d.id === deal.id
+          )
+      );
+
+    /* SORT */
+
+    uniqueDeals.sort(
+      (a, b) => b.id - a.id
+    );
+
+    setTransactions(uniqueDeals);
 
     setStats({
 
       total:
-        deals.length,
+        uniqueDeals.length,
 
       completed:
-        deals.filter(
+        uniqueDeals.filter(
           (d) =>
             d.status === "completed"
         ).length,
 
       pending:
-        deals.filter(
+        uniqueDeals.filter(
           (d) =>
             d.status === "pending"
         ).length,
 
       disputed:
-        deals.filter(
+        uniqueDeals.filter(
           (d) =>
             d.status === "disputed"
         ).length,
 
       released:
-        deals.filter(
+        uniqueDeals.filter(
           (d) =>
             d.status === "released"
         ).length,
 
       totalAmount:
-        deals.reduce(
+        uniqueDeals.reduce(
           (sum, d) =>
             sum + Number(d.amount || 0),
           0
@@ -119,13 +157,14 @@ export default function SellerDashboard() {
     });
 
     setLoading(false);
+
+  } catch (err) {
+
+    console.log(err);
+
+    setLoading(false);
   }
-
-  useEffect(() => {
-
-    loadSellerTransactions();
-
-  }, []);
+}
 
   async function logout() {
 
