@@ -51,7 +51,7 @@ export default function SellerDashboard() {
 
     setUser(user);
 
-    /* BUYER OR SELLER CAN SEE */
+    /* FIXED QUERY */
 
     const { data, error } =
       await supabase
@@ -61,7 +61,7 @@ export default function SellerDashboard() {
         .select("*")
 
         .or(
-          `seller_email.eq.${user.email},buyer_email.eq.${user.email}`
+          `seller_email.eq."${user.email}",buyer_email.eq."${user.email}"`
         )
 
         .order("id", {
@@ -71,6 +71,8 @@ export default function SellerDashboard() {
     if (error) {
 
       console.log(error);
+
+      setLoading(false);
 
       return;
     }
