@@ -23,6 +23,9 @@ export default function AdminDashboard() {
   const [loading, setLoading] =
     useState(true);
 
+  const [totalUsers, setTotalUsers] =
+    useState(0);
+
   const [stats, setStats] =
     useState({
       total: 0,
@@ -35,70 +38,97 @@ export default function AdminDashboard() {
 
   async function loadData() {
 
-    const loggedIn =
-      localStorage.getItem(
-        "admin_logged_in"
-      );
+    try {
 
-    if (loggedIn !== "true") {
+      const loggedIn =
+        localStorage.getItem(
+          "admin_logged_in"
+        );
 
-      router.push("/admin/login");
+      if (loggedIn !== "true") {
 
-      return;
-    }
+        router.push("/admin/login");
 
-    const { data, error } =
-      await supabase
+        return;
+      }
+
+      // LOAD TRANSACTIONS
+      const {
+        data,
+        error,
+      } = await supabase
         .from("transactions")
         .select("*")
         .order("id", {
           ascending: false,
         });
 
-    if (error) {
+      if (error) {
 
-      console.log(error);
+        console.log(error);
 
-      return;
+      } else {
+
+        setTransactions(data || []);
+
+        setStats({
+          total: data?.length || 0,
+
+          completed:
+            data?.filter(
+              (t) =>
+                t.status === "completed"
+            ).length || 0,
+
+          disputed:
+            data?.filter(
+              (t) =>
+                t.status === "disputed"
+            ).length || 0,
+
+          pending:
+            data?.filter(
+              (t) =>
+                t.status === "pending"
+            ).length || 0,
+
+          paid:
+            data?.filter(
+              (t) =>
+                t.status === "paid"
+            ).length || 0,
+
+          released:
+            data?.filter(
+              (t) =>
+                t.status === "released"
+            ).length || 0,
+        });
+      }
+
+      // LOAD TOTAL USERS
+      const {
+        count,
+      } = await supabase
+        .from("transactions")
+        .select(
+          "buyer_email",
+          {
+            count: "exact",
+            head: false,
+          }
+        );
+
+      setTotalUsers(count || 0);
+
+    } catch (err) {
+
+      console.log(err);
+
+    } finally {
+
+      setLoading(false);
     }
-
-    setTransactions(data || []);
-
-    setStats({
-      total: data?.length || 0,
-
-      completed:
-        data?.filter(
-          (t) =>
-            t.status === "completed"
-        ).length || 0,
-
-      disputed:
-        data?.filter(
-          (t) =>
-            t.status === "disputed"
-        ).length || 0,
-
-      pending:
-        data?.filter(
-          (t) =>
-            t.status === "pending"
-        ).length || 0,
-
-      paid:
-        data?.filter(
-          (t) =>
-            t.status === "paid"
-        ).length || 0,
-
-      released:
-        data?.filter(
-          (t) =>
-            t.status === "released"
-        ).length || 0,
-    });
-
-    setLoading(false);
   }
 
   async function logout() {
@@ -114,7 +144,9 @@ export default function AdminDashboard() {
     router.push("/admin/login");
   }
 
-  async function markCompleted(id: number) {
+  async function markCompleted(
+    id: number
+  ) {
 
     await supabase
       .from("transactions")
@@ -126,7 +158,9 @@ export default function AdminDashboard() {
     loadData();
   }
 
-  async function markDisputed(id: number) {
+  async function markDisputed(
+    id: number
+  ) {
 
     await supabase
       .from("transactions")
@@ -138,7 +172,23 @@ export default function AdminDashboard() {
     loadData();
   }
 
-  async function deleteTransaction(id: number) {
+  async function markPending(
+    id: number
+  ) {
+
+    await supabase
+      .from("transactions")
+      .update({
+        status: "pending",
+      })
+      .eq("id", id);
+
+    loadData();
+  }
+
+  async function deleteTransaction(
+    id: number
+  ) {
 
     const confirmDelete =
       confirm(
@@ -173,6 +223,8 @@ export default function AdminDashboard() {
           flex
           items-center
           justify-center
+          text-3xl
+          font-bold
         "
       >
 
@@ -195,6 +247,8 @@ export default function AdminDashboard() {
     >
 
       <div className="max-w-7xl mx-auto">
+
+        {/* HEADER */}
 
         <div
           className="
@@ -250,21 +304,29 @@ export default function AdminDashboard() {
 
         </div>
 
+        {/* STATS */}
+
         <div
           className="
             grid
             grid-cols-2
             md:grid-cols-3
-            xl:grid-cols-6
+            xl:grid-cols-7
             gap-5
             mb-10
           "
         >
 
           <StatCard
-            title="Total"
+            title="Transactions"
             value={stats.total}
             color="border-white/10"
+          />
+
+          <StatCard
+            title="Users"
+            value={totalUsers}
+            color="border-cyan-500/30"
           />
 
           <StatCard
@@ -299,6 +361,8 @@ export default function AdminDashboard() {
 
         </div>
 
+        {/* TABLE */}
+
         <div
           className="
             bg-slate-950
@@ -324,7 +388,7 @@ export default function AdminDashboard() {
 
           <div className="overflow-x-auto">
 
-            <table className="w-full min-w-[1000px]">
+            <table className="w-full min-w-[1200px]">
 
               <thead
                 className="
@@ -483,6 +547,23 @@ export default function AdminDashboard() {
                           "
                         >
                           Dispute
+                        </button>
+
+                        <button
+                          onClick={() =>
+                            markPending(t.id)
+                          }
+
+                          className="
+                            bg-purple-600
+                            hover:bg-purple-700
+                            px-5
+                            py-3
+                            rounded-2xl
+                            font-bold
+                          "
+                        >
+                          Pending
                         </button>
 
                         <button
