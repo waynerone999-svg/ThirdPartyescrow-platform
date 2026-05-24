@@ -26,6 +26,16 @@ export default function SellerDashboard() {
   const [loading, setLoading] =
     useState(true);
 
+  const [stats, setStats] =
+    useState({
+      total: 0,
+      completed: 0,
+      pending: 0,
+      disputed: 0,
+      released: 0,
+      totalAmount: 0,
+    });
+
   async function loadSellerTransactions() {
 
     const {
@@ -40,8 +50,6 @@ export default function SellerDashboard() {
     }
 
     setUser(user);
-
-    /* ONLY THIS SELLER'S DEALS */
 
     const { data, error } =
       await supabase
@@ -66,7 +74,46 @@ export default function SellerDashboard() {
       return;
     }
 
-    setTransactions(data || []);
+    const deals = data || [];
+
+    setTransactions(deals);
+
+    setStats({
+
+      total:
+        deals.length,
+
+      completed:
+        deals.filter(
+          (d) =>
+            d.status === "completed"
+        ).length,
+
+      pending:
+        deals.filter(
+          (d) =>
+            d.status === "pending"
+        ).length,
+
+      disputed:
+        deals.filter(
+          (d) =>
+            d.status === "disputed"
+        ).length,
+
+      released:
+        deals.filter(
+          (d) =>
+            d.status === "released"
+        ).length,
+
+      totalAmount:
+        deals.reduce(
+          (sum, d) =>
+            sum + Number(d.amount || 0),
+          0
+        ),
+    });
 
     setLoading(false);
   }
@@ -77,6 +124,13 @@ export default function SellerDashboard() {
 
   }, []);
 
+  async function logout() {
+
+    await supabase.auth.signOut();
+
+    router.push("/login");
+  }
+
   if (loading) {
 
     return (
@@ -84,7 +138,7 @@ export default function SellerDashboard() {
       <main
         className="
           min-h-screen
-          bg-slate-950
+          bg-[#020617]
           text-white
           flex
           items-center
@@ -92,7 +146,7 @@ export default function SellerDashboard() {
         "
       >
 
-        Loading Seller Requests...
+        Loading Seller Dashboard...
 
       </main>
     );
@@ -103,33 +157,121 @@ export default function SellerDashboard() {
     <main
       className="
         min-h-screen
-        bg-slate-950
+        bg-[#020617]
         text-white
         p-4
         md:p-8
       "
     >
 
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
 
         {/* HEADER */}
 
-        <div className="mb-12">
+        <div
+          className="
+            flex
+            flex-col
+            lg:flex-row
+            justify-between
+            gap-6
+            mb-10
+          "
+        >
 
-          <h1
+          <div>
+
+            <h1
+              className="
+                text-4xl
+                md:text-6xl
+                font-black
+                mb-4
+              "
+            >
+              Seller Dashboard
+            </h1>
+
+            <p
+              className="
+                text-slate-400
+                text-lg
+              "
+            >
+              Welcome back,
+              {" "}
+              {user?.email}
+            </p>
+
+          </div>
+
+          <button
+            onClick={logout}
+
             className="
-              text-4xl
-              md:text-6xl
-              font-black
-              mb-4
+              bg-red-600
+              hover:bg-red-700
+              px-8
+              py-4
+              rounded-2xl
+              font-bold
+              text-lg
+              h-fit
             "
           >
-            Seller Requests
-          </h1>
+            Logout
+          </button>
 
-          <p className="text-slate-400 text-lg">
-            Transactions where you are the seller
-          </p>
+        </div>
+
+        {/* STATS */}
+
+        <div
+          className="
+            grid
+            grid-cols-2
+            md:grid-cols-3
+            xl:grid-cols-6
+            gap-5
+            mb-10
+          "
+        >
+
+          <StatCard
+            title="Deals"
+            value={stats.total}
+            color="border-white/10"
+          />
+
+          <StatCard
+            title="Completed"
+            value={stats.completed}
+            color="border-green-500/30"
+          />
+
+          <StatCard
+            title="Pending"
+            value={stats.pending}
+            color="border-yellow-500/30"
+          />
+
+          <StatCard
+            title="Disputed"
+            value={stats.disputed}
+            color="border-red-500/30"
+          />
+
+          <StatCard
+            title="Released"
+            value={stats.released}
+            color="border-purple-500/30"
+          />
+
+          <StatCard
+            title="Revenue"
+            value={`$${stats.totalAmount}`}
+            color="border-blue-500/30"
+          />
 
         </div>
 
@@ -186,36 +328,102 @@ export default function SellerDashboard() {
                   "
                 >
 
-                  <div>
+                  <div className="flex-1">
 
                     <h2
                       className="
                         text-2xl
                         md:text-3xl
                         font-bold
-                        mb-3
+                        mb-4
                       "
                     >
                       {deal.transaction_name}
                     </h2>
 
-                    <p className="text-slate-400">
-                      Amount:
-                      {" "}
-                      ${deal.amount}
-                    </p>
+                    <div className="space-y-3">
 
-                    <p className="text-slate-400 mt-2">
-                      Buyer:
-                      {" "}
-                      {deal.buyer_email}
-                    </p>
+                      <p className="text-slate-300">
+                        <span className="text-slate-500">
+                          Amount:
+                        </span>
+                        {" "}
+                        ${deal.amount}
+                      </p>
 
-                    <p className="text-slate-400 mt-2">
-                      Payment:
-                      {" "}
-                      {deal.payment_method}
-                    </p>
+                      <p className="text-slate-300">
+                        <span className="text-slate-500">
+                          Buyer:
+                        </span>
+                        {" "}
+                        {deal.buyer_email}
+                      </p>
+
+                      <p className="text-slate-300">
+                        <span className="text-slate-500">
+                          Payment Method:
+                        </span>
+                        {" "}
+                        {deal.payment_method}
+                      </p>
+
+                      {/* PAYOUT SECTION */}
+
+                      <div
+                        className="
+                          mt-6
+                          bg-slate-950
+                          border
+                          border-green-500/20
+                          rounded-2xl
+                          p-5
+                        "
+                      >
+
+                        <h3
+                          className="
+                            text-xl
+                            font-bold
+                            text-green-400
+                            mb-4
+                          "
+                        >
+                          Your Payout Details
+                        </h3>
+
+                        {deal.seller_payout_method ? (
+
+                          <div className="space-y-3">
+
+                            <p className="text-slate-300">
+                              <span className="text-slate-500">
+                                Method:
+                              </span>
+                              {" "}
+                              {deal.seller_payout_method}
+                            </p>
+
+                            <p className="text-slate-300 break-all">
+                              <span className="text-slate-500">
+                                Details:
+                              </span>
+                              {" "}
+                              {deal.seller_payout_details}
+                            </p>
+
+                          </div>
+
+                        ) : (
+
+                          <p className="text-yellow-400">
+                            Payout details not submitted yet
+                          </p>
+
+                        )}
+
+                      </div>
+
+                    </div>
 
                   </div>
 
@@ -250,5 +458,47 @@ export default function SellerDashboard() {
       </div>
 
     </main>
+  );
+}
+
+function StatCard({
+  title,
+  value,
+  color,
+}: any) {
+
+  return (
+
+    <div
+      className={`
+        bg-slate-950
+        border
+        ${color}
+        rounded-3xl
+        p-6
+      `}
+    >
+
+      <p
+        className="
+          text-slate-300
+          text-xl
+          mb-5
+        "
+      >
+        {title}
+      </p>
+
+      <h2
+        className="
+          text-4xl
+          md:text-5xl
+          font-black
+        "
+      >
+        {value}
+      </h2>
+
+    </div>
   );
 }
