@@ -13,9 +13,6 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-const ADMIN_EMAIL =
-  "waynerone999@gmail.com";
-
 export default function AdminDashboard() {
 
   const router = useRouter();
@@ -38,30 +35,14 @@ export default function AdminDashboard() {
 
   async function loadData() {
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const loggedIn =
+      localStorage.getItem(
+        "admin_logged_in"
+      );
 
-    console.log("CURRENT USER:", user);
-
-    if (!user) {
+    if (loggedIn !== "true") {
 
       router.push("/admin/login");
-
-      return;
-    }
-
-    const currentEmail =
-      user.email
-        ?.trim()
-        .toLowerCase();
-
-    if (
-      currentEmail !==
-      ADMIN_EMAIL.toLowerCase()
-    ) {
-
-      router.push("/dashboard");
 
       return;
     }
@@ -122,7 +103,13 @@ export default function AdminDashboard() {
 
   async function logout() {
 
-    await supabase.auth.signOut();
+    localStorage.removeItem(
+      "admin_logged_in"
+    );
+
+    localStorage.removeItem(
+      "admin_email"
+    );
 
     router.push("/admin/login");
   }
